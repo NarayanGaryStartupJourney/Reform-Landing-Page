@@ -1,0 +1,32 @@
+{
+  "name": "proformance-landing-page",
+  "version": "1.0.0",
+  "description": "Landing page for ProFormance - AI-powered exercise form analysis app",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000",
+    "build": "node build.js",
+    "build:watch": "nodemon --watch styles.css --watch script.js --watch index.html --exec 'npm run build'",
+    "deploy": "npm run build && echo 'Ready for deployment to any static hosting service'",
+    "serve": "cd dist && python -m http.server 8001",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "fitness",
+    "ai",
+    "exercise",
+    "form-analysis",
+    "landing-page",
+    "waitlist"
+  ],
+  "author": "ProFormance Team",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/proformance-landing-page.git"
+  },
+  "homepage": "https://yourusername.github.io/proformance-landing-page"
+}

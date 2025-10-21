@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProFormance - AI-Powered Exercise Form Analysis</title>
+    <meta name="description" content="Get real-time feedback on your exercise form with AI-powered analysis. Join our waitlist for early access to the future of fitness training.">
+    <meta name="keywords" content="exercise form analysis, AI fitness, workout form, injury prevention, fitness app, personal trainer, exercise technique">
+    <meta name="author" content="ProFormance">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://proformance.app/">
+    <meta property="og:title" content="ProFormance - AI-Powered Exercise Form Analysis">
+    <meta property="og:description" content="Get real-time feedback on your exercise form with AI-powered analysis. Join our waitlist for early access to the future of fitness training.">
+    <meta property="og:image" content="https://proformance.app/og-image.jpg">
+    <meta property="og:site_name" content="ProFormance">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://proformance.app/">
+    <meta property="twitter:title" content="ProFormance - AI-Powered Exercise Form Analysis">
+    <meta property="twitter:description" content="Get real-time feedback on your exercise form with AI-powered analysis. Join our waitlist for early access to the future of fitness training.">
+    <meta property="twitter:image" content="https://proformance.app/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="styles.css" as="style">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>ProFormance</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How it Works</a>
+                <a href="#waitlist" class="cta-button">Join Waitlist</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Perfect Your Form with 
+                    <span class="gradient-text">AI-Powered Analysis</span>
+                </h1>
+                <p class="hero-description">
+                    Get real-time feedback on your exercise form using advanced computer vision. 
+                    Prevent injuries, maximize gains, and train smarter with personalized form coaching.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="scrollToWaitlist()">
+                        <i class="fas fa-rocket"></i>
+                        Join the Waitlist
+                    </button>
+                    <button class="btn-secondary" onclick="openDemoModal()">
+                        <i class="fas fa-play"></i>
+                        Watch Demo
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Exercises Analyzed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">99.2%</span>
+                        <span class="stat-label">Accuracy Rate</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">2,000+</span>
+                        <span class="stat-label">Beta Users</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="app-interface">
+                            <div class="camera-view">
+                                <div class="skeleton-overlay">
+                                    <div class="skeleton-line head"></div>
+                                    <div class="skeleton-line shoulder"></div>
+                                    <div class="skeleton-line arm-left"></div>
+                                    <div class="skeleton-line arm-right"></div>
+                                    <div class="skeleton-line torso"></div>
+                                    <div class="skeleton-line leg-left"></div>
+                                    <div class="skeleton-line leg-right"></div>
+                                </div>
+                                <div class="form-feedback">
+                                    <div class="feedback-item good">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Perfect posture</span>
+                                    </div>
+                                    <div class="feedback-item warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Knees too far forward</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose ProFormance?</h2>
+                <p>Revolutionary technology meets practical fitness coaching</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Real-Time Analysis</h3>
+                    <p>Get instant feedback on your form as you exercise. No more guessing if you're doing it right.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Injury Prevention</h3>
+                    <p>Prevent common injuries by catching form mistakes before they become problems.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Progress Tracking</h3>
+                    <p>Track your form improvements over time and see how your technique evolves.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3>500+ Exercises</h3>
+                    <p>From squats to deadlifts, we analyze virtually every exercise in your routine.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile First</h3>
+                    <p>Works seamlessly on your phone, tablet, or computer. No special equipment needed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h3>Personal Trainer</h3>
+                    <p>Get personalized coaching tips and corrections tailored to your specific needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Three simple steps to perfect form</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Position Your Device</h3>
+                        <p>Place your phone or tablet where it can see your full body during exercise.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Start Your Exercise</h3>
+                        <p>Begin your workout. Our AI analyzes your form in real-time using computer vision.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Get Instant Feedback</h3>
+                        <p>Receive immediate corrections and tips to improve your technique and prevent injuries.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section id="waitlist" class="waitlist">
+        <div class="container">
+            <div class="waitlist-content">
+                <div class="waitlist-text">
+                    <h2>Be Among the First to Experience the Future of Fitness</h2>
+                    <p>Join thousands of fitness enthusiasts who are already on our waitlist. Get early access to ProFormance and help shape the future of AI-powered fitness coaching.</p>
+                    <div class="waitlist-benefits">
+                        <div class="benefit">
+                            <i class="fas fa-gift"></i>
+                            <span>50% off for early users</span>
+                        </div>
+                        <div class="benefit">
+                            <i class="fas fa-star"></i>
+                            <span>Exclusive beta access</span>
+                        </div>
+                        <div class="benefit">
+                            <i class="fas fa-users"></i>
+                            <span>Join our fitness community</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="waitlist-form-container">
+                    <form id="waitlistForm" class="waitlist-form">
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                Join Waitlist
+                            </button>
+                        </div>
+                        <div class="form-disclaimer">
+                            <i class="fas fa-lock"></i>
+                            <span>We respect your privacy. Unsubscribe at any time.</span>
+                        </div>
+                    </form>
+                    <div id="successMessage" class="success-message" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Welcome to the waitlist!</h3>
+                        <p>We'll notify you as soon as ProFormance is ready for you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>ProFormance</span>
+                    </div>
+                    <p>Revolutionizing fitness with AI-powered form analysis</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#how-it-works">How it Works</a>
+                        <a href="#waitlist">Join Waitlist</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="#">About</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Contact</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ProFormance. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Demo Modal -->
+    <div id="demoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDemoModal()">&times;</span>
+            <div class="modal-header">
+                <h2>See ProFormance in Action</h2>
+                <p>Watch how our AI analyzes exercise form in real-time</p>
+            </div>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Demo video coming soon</p>
+                    <p class="video-description">
+                        This demo will show how ProFormance uses computer vision to analyze your exercise form, 
+                        providing real-time feedback on posture, movement patterns, and technique.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="scrollToWaitlist(); closeDemoModal();">
+                    <i class="fas fa-rocket"></i>
+                    Join Waitlist for Early Access
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
