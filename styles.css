@@ -555,6 +555,11 @@ body {
     color: #10b981;
 }
 
+/* Hidden form fields for Netlify */
+.hidden {
+    display: none;
+}
+
 .success-message {
     text-align: center;
     padding: 40px;

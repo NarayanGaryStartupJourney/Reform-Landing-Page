@@ -21,20 +21,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('successMessage');
     const emailInput = document.getElementById('email');
     
-    // Form submission handler
+    // Form submission handler for Netlify Forms
     waitlistForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
         const email = emailInput.value.trim();
         
         // Basic email validation
         if (!isValidEmail(email)) {
+            e.preventDefault();
             showError('Please enter a valid email address');
             return;
         }
         
-        // Simulate form submission
-        submitWaitlistForm(email);
+        // Show loading state
+        const submitBtn = document.querySelector('.submit-btn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
+        submitBtn.disabled = true;
+        
+        // Let Netlify handle the form submission
+        // The form will redirect to a success page or show success message
+        setTimeout(() => {
+            showSuccess('Welcome to the waitlist! We\'ll notify you when ProFormance is ready.');
+        }, 1000);
     });
     
     // Email validation
