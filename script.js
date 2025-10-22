@@ -92,34 +92,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
     
-    // Submit to Google Apps Script
+    // Submit to Google Apps Script using form submission (bypasses CORS)
     function submitToGoogleSheets(email) {
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEaT2n4_nqocKjhdLr6p2xbO54h8g76JVIJAI2E38XtthkGIonsmgVFe8-BGFirAuU/exec'; // Replace with your actual URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEaT2n4_nqocKjhdLr6p2xbO54h8g76JVIJAI2E38XtthkGIonsmgVFe8-BGFirAuU/exec';
         
-        const formData = {
-            email: email,
-            source: 'landing_page',
-            timestamp: new Date().toISOString()
-        };
+        // Create a hidden form to submit data (bypasses CORS)
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = GOOGLE_SCRIPT_URL;
+        form.target = 'hiddenFrame';
+        form.style.display = 'none';
         
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'cors', // Changed from no-cors to cors
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Network response was not ok');
-            }
-        })
-        .then(data => {
-            console.log('Success response:', data);
+        // Add form fields
+        const emailField = document.createElement('input');
+        emailField.type = 'hidden';
+        emailField.name = 'email';
+        emailField.value = email;
+        
+        const sourceField = document.createElement('input');
+        sourceField.type = 'hidden';
+        sourceField.name = 'source';
+        sourceField.value = 'landing_page';
+        
+        const timestampField = document.createElement('input');
+        timestampField.type = 'hidden';
+        timestampField.name = 'timestamp';
+        timestampField.value = new Date().toISOString();
+        
+        form.appendChild(emailField);
+        form.appendChild(sourceField);
+        form.appendChild(timestampField);
+        
+        // Create hidden iframe to handle response
+        const iframe = document.createElement('iframe');
+        iframe.name = 'hiddenFrame';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        document.body.appendChild(form);
+        
+        // Handle iframe load (success)
+        iframe.onload = function() {
+            console.log('Form submitted successfully');
+            
             // Success - show success message
             waitlistForm.style.display = 'none';
             successMessage.style.display = 'block';
@@ -140,16 +154,29 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Track conversion
             trackWaitlistSignup(email);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
+            
+            // Clean up
+            document.body.removeChild(form);
+            document.body.removeChild(iframe);
+        };
+        
+        // Handle iframe error
+        iframe.onerror = function() {
+            console.error('Form submission failed');
             showError('Something went wrong. Please try again.');
             
             // Reset button state
             const submitBtn = document.querySelector('.submit-btn');
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
             submitBtn.disabled = false;
-        });
+            
+            // Clean up
+            document.body.removeChild(form);
+            document.body.removeChild(iframe);
+        };
+        
+        // Submit the form
+        form.submit();
     }
     
     // Track waitlist signup (replace with your analytics)
