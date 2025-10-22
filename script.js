@@ -21,13 +21,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('successMessage');
     const emailInput = document.getElementById('email');
     
-    // Form submission handler for Formspree
+    // Form submission handler for Google Apps Script
     waitlistForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         const email = emailInput.value.trim();
         
         // Basic email validation
         if (!isValidEmail(email)) {
-            e.preventDefault();
             showError('Please enter a valid email address');
             return;
         }
@@ -38,11 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
         submitBtn.disabled = true;
         
-        // Let Formspree handle the submission
-        // The form will redirect to success page after submission
-        setTimeout(() => {
-            showSuccess('Welcome to the waitlist! We\'ll notify you when ProFormance is ready.');
-        }, 1000);
+        // Submit to Google Apps Script
+        submitToGoogleSheets(email);
     });
     
     // Email validation
