@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Submit to Google Apps Script
     function submitToGoogleSheets(email) {
-        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your actual URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1xwXFNpcDEyXPyW1yKoeOZSps3PV54VBfArcGdHGCt4SNvDNkkOjMl5vRYTRS9uR6/exec'; // Replace with your actual URL
         
         const formData = {
             email: email,

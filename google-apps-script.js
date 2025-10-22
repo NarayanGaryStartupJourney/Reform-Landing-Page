@@ -12,7 +12,7 @@ function doPost(e) {
     const source = data.source || 'landing_page';
     
     // Get the spreadsheet
-    const spreadsheet = SpreadsheetApp.openById('YOUR_SPREADSHEET_ID'); // Replace with your spreadsheet ID
+    const spreadsheet = SpreadsheetApp.openById('1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8'); // Replace with your spreadsheet ID
     const sheet = spreadsheet.getSheetByName('Waitlist') || spreadsheet.getActiveSheet();
     
     // Add headers if this is the first row
