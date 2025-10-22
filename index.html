@@ -234,11 +234,8 @@
                     </div>
                 </div>
                 <div class="waitlist-form-container">
-                    <form id="waitlistForm" class="waitlist-form" name="waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/success.html">
-                        <input type="hidden" name="form-name" value="waitlist" />
-                        <p class="hidden">
-                            <label>Don't fill this out if you're human: <input name="bot-field" /></label>
-                        </p>
+                    <form id="waitlistForm" class="waitlist-form">
+                        <input type="hidden" name="source" value="landing_page" />
                         <div class="form-group">
                             <input type="email" id="email" name="email" placeholder="Enter your email address" required>
                             <button type="submit" class="submit-btn">

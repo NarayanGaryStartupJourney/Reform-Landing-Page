@@ -21,13 +21,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('successMessage');
     const emailInput = document.getElementById('email');
     
-    // Form submission handler for Netlify Forms
+    // Form submission handler for Google Apps Script
     waitlistForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         const email = emailInput.value.trim();
         
         // Basic email validation
         if (!isValidEmail(email)) {
-            e.preventDefault();
             showError('Please enter a valid email address');
             return;
         }
@@ -38,11 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
         submitBtn.disabled = true;
         
-        // Let Netlify handle the form submission
-        // The form will redirect to a success page or show success message
-        setTimeout(() => {
-            showSuccess('Welcome to the waitlist! We\'ll notify you when ProFormance is ready.');
-        }, 1000);
+        // Submit to Google Apps Script
+        submitToGoogleSheets(email);
     });
     
     // Email validation
@@ -94,22 +92,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
     
-    // Submit waitlist form
-    function submitWaitlistForm(email) {
-        // Show loading state
-        const submitBtn = document.querySelector('.submit-btn');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
-        submitBtn.disabled = true;
+    // Submit to Google Apps Script
+    function submitToGoogleSheets(email) {
+        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your actual URL
         
-        // Simulate API call
-        setTimeout(() => {
-            // Hide form and show success message
+        const formData = {
+            email: email,
+            source: 'landing_page',
+            timestamp: new Date().toISOString()
+        };
+        
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Required for Google Apps Script
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(() => {
+            // Success - show success message
             waitlistForm.style.display = 'none';
             successMessage.style.display = 'block';
             
             // Reset button state
-            submitBtn.innerHTML = originalText;
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
             submitBtn.disabled = false;
             
             // Show success toast
@@ -121,10 +129,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 block: 'center'
             });
             
-            // Track conversion (you can replace this with your analytics)
+            // Track conversion
             trackWaitlistSignup(email);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            showError('Something went wrong. Please try again.');
             
-        }, 1500);
+            // Reset button state
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
+            submitBtn.disabled = false;
+        });
     }
     
     // Track waitlist signup (replace with your analytics)
