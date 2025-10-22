@@ -104,13 +104,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // Required for Google Apps Script
+            mode: 'cors', // Changed from no-cors to cors
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(formData)
         })
-        .then(() => {
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .then(data => {
+            console.log('Success response:', data);
             // Success - show success message
             waitlistForm.style.display = 'none';
             successMessage.style.display = 'block';
