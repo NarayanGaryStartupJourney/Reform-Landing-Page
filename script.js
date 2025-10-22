@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Submit to Google Apps Script using form submission (bypasses CORS)
     function submitToGoogleSheets(email) {
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEaT2n4_nqocKjhdLr6p2xbO54h8g76JVIJAI2E38XtthkGIonsmgVFe8-BGFirAuU/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec';
         
         // Create a hidden form to submit data (bypasses CORS)
         const form = document.createElement('form');
