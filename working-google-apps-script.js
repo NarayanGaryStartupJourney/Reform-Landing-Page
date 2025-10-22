@@ -20,7 +20,7 @@ function doPost(e) {
     const timestamp = new Date();
     
     // Get the spreadsheet - REPLACE THIS ID WITH YOUR ACTUAL SPREADSHEET ID
-    const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'; // Replace with your spreadsheet ID
+    const SPREADSHEET_ID = '1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8'; // Replace with your spreadsheet ID
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName('Waitlist') || spreadsheet.getActiveSheet();
     
