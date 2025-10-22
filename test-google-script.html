@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Apps Script</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-form { max-width: 400px; margin: 20px 0; }
+        .form-group { margin: 10px 0; }
+        input, button { padding: 10px; width: 100%; margin: 5px 0; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        .result { margin: 20px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Test Google Apps Script Connection</h1>
+    
+    <div class="test-form">
+        <h3>Test 1: Check if API is running</h3>
+        <button onclick="testAPI()">Test API Connection</button>
+        <div id="apiResult" class="result"></div>
+    </div>
+    
+    <div class="test-form">
+        <h3>Test 2: Submit test email</h3>
+        <div class="form-group">
+            <input type="email" id="testEmail" placeholder="Enter test email" value="test@example.com">
+        </div>
+        <button onclick="testSubmission()">Submit Test Email</button>
+        <div id="submitResult" class="result"></div>
+    </div>
+    
+    <div class="test-form">
+        <h3>Test 3: Direct form submission</h3>
+        <form id="directForm" action="https://script.google.com/macros/s/AKfycbxEaT2n4_nqocKjhdLr6p2xbO54h8g76JVIJAI2E38XtthkGIonsmgVFe8-BGFirAuU/exec" method="POST" target="testFrame">
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Enter email" value="direct-test@example.com" required>
+                <input type="hidden" name="source" value="test">
+            </div>
+            <button type="submit">Direct Form Submit</button>
+        </form>
+        <iframe id="testFrame" name="testFrame" style="display: none;"></iframe>
+        <div id="directResult" class="result"></div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEaT2n4_nqocKjhdLr6p2xbO54h8g76JVIJAI2E38XtthkGIonsmgVFe8-BGFirAuU/exec';
+        
+        // Test 1: Check API connection
+        async function testAPI() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const text = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<strong>✅ API is working!</strong><br>Response: ${text}`;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.innerHTML = `<strong>❌ API Error</strong><br>Status: ${response.status}<br>Response: ${text}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<strong>❌ Connection Failed</strong><br>Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        // Test 2: Submit test email using fetch
+        async function testSubmission() {
+            const email = document.getElementById('testEmail').value;
+            const resultDiv = document.getElementById('submitResult');
+            resultDiv.innerHTML = 'Submitting...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('source', 'test');
+                formData.append('timestamp', new Date().toISOString());
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const text = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<strong>✅ Submission successful!</strong><br>Response: ${text}`;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.innerHTML = `<strong>❌ Submission failed</strong><br>Status: ${response.status}<br>Response: ${text}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<strong>❌ Submission error</strong><br>Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        // Test 3: Handle direct form submission
+        document.getElementById('directForm').addEventListener('submit', function(e) {
+            const resultDiv = document.getElementById('directResult');
+            resultDiv.innerHTML = 'Submitting direct form...';
+            resultDiv.className = 'result';
+            
+            // Set up iframe load handler
+            document.getElementById('testFrame').onload = function() {
+                resultDiv.innerHTML = '<strong>✅ Direct form submitted!</strong><br>Check your Google Spreadsheet.';
+                resultDiv.className = 'result success';
+            };
+        });
+    </script>
+</body>
+</html>
