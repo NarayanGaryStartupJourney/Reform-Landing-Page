@@ -23,15 +23,51 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form submission handler for Google Apps Script
     waitlistForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
         const email = emailInput.value.trim();
         
         // Basic email validation
         if (!isValidEmail(email)) {
+            e.preventDefault();
             showError('Please enter a valid email address');
             return;
         }
+        
+        // Check if we're in Twitter iOS in-app browser
+        const userAgent = navigator.userAgent || '';
+        const isTwitterIOS = (/Twitter/i.test(userAgent) && /iPhone|iPad/i.test(userAgent)) || 
+                            (/FBAN|FBAV/i.test(userAgent) && /iPhone|iPad/i.test(userAgent));
+        
+        console.log('Submitting form. Twitter iOS detected:', isTwitterIOS);
+        
+        // For Twitter iOS: Use traditional form POST submission (no JavaScript network calls)
+        if (isTwitterIOS) {
+            console.log('Using traditional POST form submission for Twitter iOS');
+            
+            // Don't prevent default - let the form submit normally via POST
+            // The form will submit to hidden iframe (no page navigation)
+            
+            // Show loading state
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
+            submitBtn.disabled = true;
+            
+            // Show success after timeout (we can't detect iframe load on Twitter iOS)
+            setTimeout(() => {
+                console.log('Twitter iOS: Assuming form submission success');
+                waitlistForm.style.display = 'none';
+                successMessage.style.display = 'block';
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
+                submitBtn.disabled = false;
+                showSuccess('Welcome to the waitlist! We\'ll notify you when Reform is ready.');
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 3000);
+            
+            // Let form submit naturally (don't preventDefault)
+            return;
+        }
+        
+        // For all other browsers: Use JavaScript method
+        e.preventDefault();
         
         // Show loading state
         const submitBtn = document.querySelector('.submit-btn');
