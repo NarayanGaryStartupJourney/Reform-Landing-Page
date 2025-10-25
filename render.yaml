@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: proformance-landing-page
+    name: reform-landing-page
     env: static
     buildCommand: npm install && npm run build || true
     staticPublishPath: .

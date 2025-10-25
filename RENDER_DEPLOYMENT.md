@@ -1,4 +1,4 @@
-# 🚀 Deploy to Render (Fast & Private Repository Support)
+# 🚀 Deploy Reform to Render (Fast & Private Repository Support)
 
 ## Why Render?
 - ✅ **Works with private repositories** (perfect for team-only visibility)
@@ -28,7 +28,7 @@
 ### **Step 3: Configure Deployment**
 Fill in the following settings:
 
-- **Name**: `proformance-landing-page` (or any name you prefer)
+- **Name**: `reform-landing-page` (or any name you prefer)
 - **Branch**: `main`
 - **Root Directory**: (leave blank)
 - **Build Command**: `npm run build` (or leave blank if no build needed)
@@ -39,7 +39,7 @@ Click **"Create Static Site"**
 ### **Step 4: Wait for Deployment** ⏱️
 - Render will automatically build and deploy your site
 - First deployment takes ~2-3 minutes
-- You'll get a URL like: `https://proformance-landing-page.onrender.com`
+- You'll get a URL like: `https://reform-landing-page.onrender.com`
 
 ---
 
@@ -55,7 +55,7 @@ Your landing page is now live with:
 
 ## 🔧 Optional: Custom Domain
 
-### To add your own domain (e.g., proformance.app):
+### To add your own domain (e.g., reform.app):
 1. In Render dashboard, go to your site
 2. Click **"Settings"**
 3. Scroll to **"Custom Domain"**
@@ -82,7 +82,7 @@ Your landing page is now live with:
 
 Check your deployment at:
 - **Dashboard**: https://dashboard.render.com/
-- **Live Site**: https://proformance-landing-page.onrender.com (or your custom domain)
+- **Live Site**: https://reform-landing-page.onrender.com (or your custom domain)
 
 ---
 

@@ -1,7 +1,7 @@
 {
-  "name": "proformance-landing-page",
+  "name": "reform-landing-page",
   "version": "1.0.0",
-  "description": "Landing page for ProFormance - AI-powered exercise form analysis app",
+  "description": "Landing page for Reform - AI-powered exercise form analysis app",
   "main": "index.html",
   "scripts": {
     "start": "python -m http.server 8000",
@@ -20,7 +20,7 @@
     "landing-page",
     "waitlist"
   ],
-  "author": "ProFormance Team",
+  "author": "Reform Team",
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {},

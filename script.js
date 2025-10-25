@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = false;
             
             // Show success toast
-            showSuccess('Welcome to the waitlist! We\'ll notify you when ProFormance is ready.');
+            showSuccess('Welcome to the waitlist! We\'ll notify you when Reform is ready.');
             
             // Scroll to success message
             successMessage.scrollIntoView({
