@@ -15,13 +15,30 @@ function doPost(e) {
     const response = ContentService.createTextOutput();
     response.setMimeType(ContentService.MimeType.JSON);
     
-    // Parse the form data
-    const data = JSON.parse(e.postData.contents);
-    const email = data.email;
-    const source = data.source || 'landing_page';
+    // Parse the form data - handle both JSON and form-encoded data
+    let email, source;
+    
+    // Check if data is sent as JSON (fetch) or form data (form submission)
+    if (e.postData && e.postData.type === 'application/json') {
+      // JSON data from fetch
+      const data = JSON.parse(e.postData.contents);
+      email = data.email;
+      source = data.source || 'landing_page';
+    } else {
+      // Form data from traditional form submission
+      email = e.parameter.email || e.parameters.email;
+      source = e.parameter.source || e.parameters.source || 'landing_page';
+    }
+    
     const timestamp = new Date();
     
-    console.log('Received data:', data);
+    console.log('Received email:', email);
+    console.log('Source:', source);
+    
+    // Validate email
+    if (!email || email.trim() === '') {
+      throw new Error('Email is required');
+    }
     
     // Get the spreadsheet
     const SPREADSHEET_ID = '1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8';
