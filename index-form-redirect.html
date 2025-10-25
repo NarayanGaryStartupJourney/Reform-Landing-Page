@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reform - Train Like Tomorrow with AI</title>
+    <meta name="description" content="Train Smarter. Move Better. Perform Stronger. Get real-time AI feedback on your form — improve your workouts with precision and confidence.">
+    
+    <!-- Same head content as regular index.html -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Additional styles for form redirect method */
+        .form-notice {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>Reform</span>
+            </div>
+            <div class="nav-links">
+                <a href="#waitlist" class="cta-button">Join Waitlist</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content-centered">
+                <h1 class="hero-title-large">
+                    AI Personal Trainer.<br>
+                    <span class="gradient-text">Perfect Your Form.</span>
+                </h1>
+                <p class="hero-description-simple">
+                    Real-time pose estimation for every sport. Get instant feedback on your volleyball swing, basketball shot, or gym workout.
+                </p>
+                
+                <!-- FORM REDIRECT METHOD - Works 100% in all browsers -->
+                <div id="waitlist" class="inline-waitlist-form">
+                    <!-- This form uses traditional submission - works even in restrictive browsers -->
+                    <form action="https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec" 
+                          method="GET" 
+                          class="waitlist-form"
+                          onsubmit="showLoading()">
+                        <input type="hidden" name="source" value="landing_page_redirect" />
+                        <input type="hidden" name="redirect" value="https://reform-landing-page.onrender.com/success.html" />
+                        <div class="form-group">
+                            <input type="email" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="Enter your email address" 
+                                   required>
+                            <button type="submit" class="submit-btn" id="submitBtn">
+                                <i class="fas fa-paper-plane"></i>
+                                Join Waitlist
+                            </button>
+                        </div>
+                        <div class="form-disclaimer">
+                            <i class="fas fa-lock"></i>
+                            <span>We respect your privacy. Unsubscribe at any time.</span>
+                        </div>
+                        <div class="form-notice">
+                            Works on all devices and browsers
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>Reform</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Reform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // Simple loading indicator
+        function showLoading() {
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            btn.disabled = true;
+        }
+        
+        // Check if we came back from a successful submission
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('submitted') === 'true') {
+            // Show success message
+            const form = document.querySelector('.waitlist-form');
+            form.innerHTML = `
+                <div class="success-message" style="display: block; text-align: center; padding: 40px;">
+                    <i class="fas fa-check-circle" style="font-size: 48px; color: #4ade80; margin-bottom: 20px;"></i>
+                    <h3 style="color: #1e293b; margin-bottom: 10px;">Welcome to the waitlist!</h3>
+                    <p style="color: #64748b;">We'll notify you as soon as Reform is ready for you.</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
+

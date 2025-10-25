@@ -128,7 +128,17 @@ function doGet(e) {
       console.log('Added row:', newRow);
       console.log('Last row after:', sheet.getLastRow());
       
-      // Return a 1x1 transparent GIF (for image beacon)
+      // Check if a redirect URL was provided (for form redirect method)
+      if (e.parameter.redirect) {
+        console.log('Redirect requested to:', e.parameter.redirect);
+        const redirectUrl = e.parameter.redirect + '?submitted=true&email=' + encodeURIComponent(email);
+        return HtmlService.createHtmlOutput(
+          '<html><head><meta http-equiv="refresh" content="0;url=' + redirectUrl + '"></head>' +
+          '<body>Success! Redirecting...</body></html>'
+        );
+      }
+      
+      // Return a simple success response (for image beacon / AJAX)
       // This is critical for Twitter and other in-app browsers
       const output = ContentService.createTextOutput('');
       output.setMimeType(ContentService.MimeType.TEXT);
