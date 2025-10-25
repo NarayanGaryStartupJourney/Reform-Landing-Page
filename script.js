@@ -130,8 +130,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(iframe);
         document.body.appendChild(form);
         
-        // Handle iframe load (success)
-        iframe.onload = function() {
+        // Flag to prevent double success messages
+        let successHandled = false;
+        
+        function handleSuccess() {
+            if (successHandled) return;
+            successHandled = true;
+            
             console.log('Form submitted successfully');
             
             // Success - show success message
@@ -156,12 +161,29 @@ document.addEventListener('DOMContentLoaded', function() {
             trackWaitlistSignup(email);
             
             // Clean up
-            document.body.removeChild(form);
-            document.body.removeChild(iframe);
+            setTimeout(() => {
+                if (form.parentNode) document.body.removeChild(form);
+                if (iframe.parentNode) document.body.removeChild(iframe);
+            }, 100);
+        }
+        
+        // Handle iframe load (success) - works on most browsers
+        iframe.onload = function() {
+            handleSuccess();
         };
+        
+        // iOS Safari fallback: Assume success after timeout since iOS doesn't reliably trigger onload
+        // Google Apps Script typically responds in < 2 seconds
+        const iOSTimeout = setTimeout(() => {
+            console.log('iOS fallback: Assuming submission success');
+            handleSuccess();
+        }, 2500);
         
         // Handle iframe error
         iframe.onerror = function() {
+            clearTimeout(iOSTimeout);
+            if (successHandled) return;
+            
             console.error('Form submission failed');
             showError('Something went wrong. Please try again.');
             
@@ -171,8 +193,8 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = false;
             
             // Clean up
-            document.body.removeChild(form);
-            document.body.removeChild(iframe);
+            if (form.parentNode) document.body.removeChild(form);
+            if (iframe.parentNode) document.body.removeChild(iframe);
         };
         
         // Submit the form
