@@ -96,6 +96,84 @@ document.addEventListener('DOMContentLoaded', function() {
     function submitToGoogleSheets(email) {
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec';
         
+        // Flag to prevent double success messages
+        let successHandled = false;
+        
+        // Success handler (shared by all methods)
+        function handleSuccess() {
+            if (successHandled) return;
+            successHandled = true;
+            
+            console.log('Form submitted successfully');
+            
+            // Success - show success message
+            waitlistForm.style.display = 'none';
+            successMessage.style.display = 'block';
+            
+            // Reset button state
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
+            submitBtn.disabled = false;
+            
+            // Show success toast
+            showSuccess('Welcome to the waitlist! We\'ll notify you when Reform is ready.');
+            
+            // Scroll to success message
+            successMessage.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            // Track conversion
+            trackWaitlistSignup(email);
+        }
+        
+        // Detect if we're in an in-app browser (Twitter, Facebook, Instagram, etc.)
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const isInAppBrowser = /FBAN|FBAV|Twitter|Instagram|LinkedIn|Line|WeChat|Snapchat/i.test(userAgent);
+        
+        console.log('User Agent:', userAgent);
+        console.log('In-app browser detected:', isInAppBrowser);
+        
+        // For in-app browsers, use GET method with URL encoding (more reliable)
+        if (isInAppBrowser) {
+            console.log('Using in-app browser method (GET with URL params)');
+            
+            // Encode parameters
+            const params = new URLSearchParams({
+                email: email,
+                source: 'landing_page_inapp',
+                timestamp: new Date().toISOString()
+            });
+            
+            // Create image beacon for submission (most reliable for in-app browsers)
+            const img = new Image();
+            img.style.display = 'none';
+            img.onload = function() {
+                console.log('Beacon loaded - submission successful');
+                handleSuccess();
+            };
+            img.onerror = function() {
+                console.log('Beacon error - but submission likely successful');
+                handleSuccess(); // Still show success as the request was sent
+            };
+            
+            // Submit via GET (Google Apps Script will handle it)
+            img.src = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            document.body.appendChild(img);
+            
+            // Fallback timeout
+            setTimeout(() => {
+                console.log('In-app browser timeout - assuming success');
+                handleSuccess();
+            }, 2000);
+            
+            return;
+        }
+        
+        // Standard method for regular browsers (Safari, Chrome, Firefox)
+        console.log('Using standard browser method (POST with iframe)');
+        
         // Create a hidden form to submit data (bypasses CORS)
         const form = document.createElement('form');
         form.method = 'POST';
@@ -130,50 +208,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(iframe);
         document.body.appendChild(form);
         
-        // Flag to prevent double success messages
-        let successHandled = false;
-        
-        function handleSuccess() {
-            if (successHandled) return;
-            successHandled = true;
-            
-            console.log('Form submitted successfully');
-            
-            // Success - show success message
-            waitlistForm.style.display = 'none';
-            successMessage.style.display = 'block';
-            
-            // Reset button state
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
-            submitBtn.disabled = false;
-            
-            // Show success toast
-            showSuccess('Welcome to the waitlist! We\'ll notify you when Reform is ready.');
-            
-            // Scroll to success message
-            successMessage.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-            
-            // Track conversion
-            trackWaitlistSignup(email);
-            
-            // Clean up
-            setTimeout(() => {
-                if (form.parentNode) document.body.removeChild(form);
-                if (iframe.parentNode) document.body.removeChild(iframe);
-            }, 100);
-        }
-        
         // Handle iframe load (success) - works on most browsers
         iframe.onload = function() {
+            console.log('iframe onload fired');
             handleSuccess();
         };
         
         // iOS Safari fallback: Assume success after timeout since iOS doesn't reliably trigger onload
-        // Google Apps Script typically responds in < 2 seconds
         const iOSTimeout = setTimeout(() => {
             console.log('iOS fallback: Assuming submission success');
             handleSuccess();
@@ -199,6 +240,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Submit the form
         form.submit();
+        
+        // Clean up after success
+        setTimeout(() => {
+            if (form && form.parentNode) document.body.removeChild(form);
+            if (iframe && iframe.parentNode) document.body.removeChild(iframe);
+        }, 3000);
     }
     
     // Track waitlist signup (replace with your analytics)

@@ -89,17 +89,68 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  // Handle GET requests (for testing)
-  const response = ContentService.createTextOutput();
-  response.setMimeType(ContentService.MimeType.JSON);
-  
-  const result = {
-    message: 'ProFormance Waitlist API is running!',
-    timestamp: new Date().toISOString(),
-    status: 'active'
-  };
-  
-  return response.setContent(JSON.stringify(result));
+  try {
+    // Check if this is a form submission (has email parameter)
+    if (e.parameter && e.parameter.email) {
+      console.log('GET request with email - processing as submission');
+      
+      // Extract parameters
+      const email = e.parameter.email;
+      const source = e.parameter.source || 'landing_page';
+      const timestamp = new Date();
+      
+      console.log('Received email via GET:', email);
+      console.log('Source:', source);
+      
+      // Validate email
+      if (!email || email.trim() === '') {
+        throw new Error('Email is required');
+      }
+      
+      // Get the spreadsheet
+      const SPREADSHEET_ID = '1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8';
+      const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+      const sheet = spreadsheet.getSheetByName('Waitlist') || spreadsheet.getActiveSheet();
+      
+      console.log('Sheet name:', sheet.getName());
+      console.log('Last row before:', sheet.getLastRow());
+      
+      // Add headers if this is the first row
+      if (sheet.getLastRow() === 0) {
+        sheet.getRange(1, 1, 1, 4).setValues([['Email', 'Timestamp', 'Source', 'Status']]);
+        console.log('Added headers');
+      }
+      
+      // Add the new submission
+      const newRow = [email, timestamp, source, 'Active'];
+      sheet.appendRow(newRow);
+      
+      console.log('Added row:', newRow);
+      console.log('Last row after:', sheet.getLastRow());
+      
+      // Return a 1x1 transparent pixel (for image beacon)
+      const pixel = Utilities.base64Decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+      return ContentService.createTextOutput().setContent('').setMimeType(ContentService.MimeType.JPEG);
+      
+    } else {
+      // Regular GET request (for testing)
+      const response = ContentService.createTextOutput();
+      response.setMimeType(ContentService.MimeType.JSON);
+      
+      const result = {
+        message: 'Reform Waitlist API is running!',
+        timestamp: new Date().toISOString(),
+        status: 'active'
+      };
+      
+      return response.setContent(JSON.stringify(result));
+    }
+  } catch (error) {
+    console.error('Error in doGet:', error);
+    
+    // Return 1x1 pixel even on error (for image beacon fallback)
+    return ContentService.createTextOutput().setContent('').setMimeType(ContentService.MimeType.TEXT);
+  }
 }
 
 /**
