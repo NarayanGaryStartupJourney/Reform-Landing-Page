@@ -37,7 +37,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const isTwitterIOS = (/Twitter/i.test(userAgent) && /iPhone|iPad/i.test(userAgent)) || 
                             (/FBAN|FBAV/i.test(userAgent) && /iPhone|iPad/i.test(userAgent));
         
-        console.log('Submitting form. Twitter iOS detected:', isTwitterIOS);
+        console.log('=== FORM SUBMISSION DEBUG ===');
+        console.log('User Agent:', userAgent);
+        console.log('Is Twitter:', /Twitter/i.test(userAgent));
+        console.log('Is iPhone/iPad:', /iPhone|iPad/i.test(userAgent));
+        console.log('Twitter iOS detected:', isTwitterIOS);
+        console.log('Form action:', waitlistForm.action);
+        console.log('Form method:', waitlistForm.method);
+        console.log('Form target:', waitlistForm.target);
         
         // For Twitter iOS: Use traditional form POST submission (no JavaScript network calls)
         if (isTwitterIOS) {

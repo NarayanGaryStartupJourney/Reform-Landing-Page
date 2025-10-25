@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter iOS - Final Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%);
+            min-height: 100vh;
+            padding: 15px;
+            color: #fff;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 20px; font-size: 20px; }
+        .box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        h2 { font-size: 15px; margin-bottom: 8px; color: #1DA1F2; }
+        p { margin: 5px 0; font-size: 13px; }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 11px;
+            margin: 3px;
+        }
+        .badge.yes { background: #00ff00; color: #000; }
+        .badge.no { background: #ff0000; color: #fff; }
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #1DA1F2;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #1DA1F2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+        button:disabled { opacity: 0.5; }
+        .log {
+            background: #000;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+        }
+        .log-line { margin: 2px 0; }
+        .log-line.success { color: #00ff00; }
+        .log-line.error { color: #ff0000; }
+        .log-line.warn { color: #ffd700; }
+        .log-line.info { color: #00bfff; }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .link { color: #1DA1F2; text-decoration: none; font-weight: bold; }
+        .test-section { margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐦📱 Twitter iOS Final Diagnostic</h1>
+        
+        <div class="box">
+            <h2>Browser Detection</h2>
+            <p><strong>iPhone:</strong> <span id="isIPhone" class="badge"></span></p>
+            <p><strong>Twitter:</strong> <span id="isTwitter" class="badge"></span></p>
+            <p><strong>Twitter iOS:</strong> <span id="isTwitterIOS" class="badge"></span></p>
+            <p style="font-size: 10px; word-break: break-all;"><strong>UA:</strong> <span id="ua"></span></p>
+        </div>
+        
+        <div class="box">
+            <h2>Test 1: Direct Form POST (No iframe)</h2>
+            <p style="font-size: 11px;">This will briefly navigate away and back</p>
+            <form id="form1" action="https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec" method="POST">
+                <input type="email" name="email" value="test1-direct@example.com" required>
+                <input type="hidden" name="source" value="twitter_ios_test1">
+                <button type="submit">🔵 Test 1: Direct POST</button>
+            </form>
+        </div>
+        
+        <div class="box">
+            <h2>Test 2: Form POST to iframe</h2>
+            <form id="form2" action="https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec" method="POST" target="iframe2">
+                <input type="email" name="email" value="test2-iframe@example.com" required>
+                <input type="hidden" name="source" value="twitter_ios_test2">
+                <button type="submit">🟢 Test 2: POST to iframe</button>
+            </form>
+            <iframe name="iframe2" style="display:none;"></iframe>
+        </div>
+        
+        <div class="box">
+            <h2>Test 3: Form GET to iframe</h2>
+            <form id="form3" action="https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec" method="GET" target="iframe3">
+                <input type="email" name="email" value="test3-get@example.com" required>
+                <input type="hidden" name="source" value="twitter_ios_test3">
+                <button type="submit">🟡 Test 3: GET to iframe</button>
+            </form>
+            <iframe name="iframe3" style="display:none;"></iframe>
+        </div>
+        
+        <div class="box">
+            <h2>Test 4: JavaScript sendBeacon</h2>
+            <input type="email" id="email4" value="test4-beacon@example.com">
+            <button onclick="test4()">🟠 Test 4: sendBeacon</button>
+            <div id="status4" class="status"></div>
+        </div>
+        
+        <div class="box">
+            <h2>Test 5: Programmatic Form Submit</h2>
+            <input type="email" id="email5" value="test5-prog@example.com">
+            <button onclick="test5()">🟣 Test 5: JS Form Submit</button>
+            <div id="status5" class="status"></div>
+        </div>
+        
+        <div class="box">
+            <h2>📋 Console Log</h2>
+            <div id="log" class="log"></div>
+        </div>
+        
+        <div class="box">
+            <h2>Next Steps</h2>
+            <p style="font-size: 12px;">1. Try each test above</p>
+            <p style="font-size: 12px;">2. Check <a href="https://docs.google.com/spreadsheets/d/1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8/edit" target="_blank" class="link">Google Sheet</a></p>
+            <p style="font-size: 12px;">3. Check <a href="https://script.google.com" target="_blank" class="link">Execution Logs</a></p>
+            <p style="font-size: 12px;">4. Tell me which tests worked!</p>
+        </div>
+    </div>
+    
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec';
+        
+        function log(msg, type = 'info') {
+            const logEl = document.getElementById('log');
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            const time = new Date().toLocaleTimeString();
+            line.textContent = `[${time}] ${msg}`;
+            logEl.appendChild(line);
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(`[${type}]`, msg);
+        }
+        
+        // Detection
+        const ua = navigator.userAgent || '';
+        const isIPhone = /iPhone/i.test(ua);
+        const isTwitter = /Twitter/i.test(ua);
+        const isTwitterIOS = isTwitter && isIPhone;
+        
+        document.getElementById('ua').textContent = ua;
+        document.getElementById('isIPhone').textContent = isIPhone ? 'YES' : 'NO';
+        document.getElementById('isIPhone').className = `badge ${isIPhone ? 'yes' : 'no'}`;
+        document.getElementById('isTwitter').textContent = isTwitter ? 'YES' : 'NO';
+        document.getElementById('isTwitter').className = `badge ${isTwitter ? 'yes' : 'no'}`;
+        document.getElementById('isTwitterIOS').textContent = isTwitterIOS ? 'YES' : 'NO';
+        document.getElementById('isTwitterIOS').className = `badge ${isTwitterIOS ? 'yes' : 'no'}`;
+        
+        log('Page loaded', 'info');
+        log(`iPhone: ${isIPhone}, Twitter: ${isTwitter}`, 'info');
+        
+        // Test 4: sendBeacon
+        function test4() {
+            log('=== TEST 4: sendBeacon ===', 'warn');
+            const email = document.getElementById('email4').value;
+            const params = new URLSearchParams({
+                email: email,
+                source: 'twitter_ios_test4',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${SCRIPT_URL}?${params.toString()}`;
+            
+            if (navigator.sendBeacon) {
+                const sent = navigator.sendBeacon(url);
+                log(`sendBeacon result: ${sent}`, sent ? 'success' : 'error');
+                document.getElementById('status4').textContent = sent ? '✅ Sent' : '❌ Failed';
+                document.getElementById('status4').className = `status ${sent ? 'success' : 'error'}`;
+                document.getElementById('status4').style.display = 'block';
+            } else {
+                log('sendBeacon not available', 'error');
+                document.getElementById('status4').textContent = '❌ Not Available';
+                document.getElementById('status4').className = 'status error';
+                document.getElementById('status4').style.display = 'block';
+            }
+        }
+        
+        // Test 5: Programmatic form submit
+        function test5() {
+            log('=== TEST 5: Programmatic Submit ===', 'warn');
+            const email = document.getElementById('email5').value;
+            
+            const iframe = document.createElement('iframe');
+            iframe.name = 'test5frame';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            const form = document.createElement('form');
+            form.action = SCRIPT_URL;
+            form.method = 'POST';
+            form.target = 'test5frame';
+            form.style.display = 'none';
+            
+            const emailInput = document.createElement('input');
+            emailInput.name = 'email';
+            emailInput.value = email;
+            
+            const sourceInput = document.createElement('input');
+            sourceInput.name = 'source';
+            sourceInput.value = 'twitter_ios_test5';
+            
+            form.appendChild(emailInput);
+            form.appendChild(sourceInput);
+            document.body.appendChild(form);
+            
+            log('Submitting programmatic form...', 'info');
+            form.submit();
+            log('Form submitted!', 'success');
+            
+            document.getElementById('status5').textContent = '✅ Submitted! Check sheet.';
+            document.getElementById('status5').className = 'status success';
+            document.getElementById('status5').style.display = 'block';
+            
+            setTimeout(() => {
+                form.remove();
+                iframe.remove();
+            }, 2000);
+        }
+        
+        // Log form submissions
+        document.getElementById('form1').addEventListener('submit', () => {
+            log('TEST 1: Direct POST submitted', 'warn');
+        });
+        
+        document.getElementById('form2').addEventListener('submit', () => {
+            log('TEST 2: POST to iframe submitted', 'warn');
+        });
+        
+        document.getElementById('form3').addEventListener('submit', () => {
+            log('TEST 3: GET to iframe submitted', 'warn');
+        });
+    </script>
+</body>
+</html>
+
