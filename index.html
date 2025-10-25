@@ -67,11 +67,7 @@
                 
                 <!-- Inline Waitlist Form -->
                 <div class="inline-waitlist-form">
-                    <form id="waitlistForm" 
-                          class="waitlist-form"
-                          action="https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec"
-                          method="POST"
-                          target="hiddenIframe">
+                    <form id="waitlistForm" class="waitlist-form">
                         <input type="hidden" name="source" value="landing_page" />
                         <div class="form-group">
                             <input type="email" id="email" name="email" placeholder="Enter your email address" required>
@@ -85,8 +81,6 @@
                             <span>We respect your privacy. Unsubscribe at any time.</span>
                         </div>
                     </form>
-                    <!-- Hidden iframe for form submission (Twitter iOS compatibility) -->
-                    <iframe name="hiddenIframe" id="hiddenIframe" style="display:none;"></iframe>
                     <div id="successMessage" class="success-message" style="display: none;">
                         <i class="fas fa-check-circle"></i>
                         <h3>Welcome to the waitlist!</h3>

@@ -32,48 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Check if we're in Twitter iOS in-app browser
-        const userAgent = navigator.userAgent || '';
-        const isTwitterIOS = (/Twitter/i.test(userAgent) && /iPhone|iPad/i.test(userAgent)) || 
-                            (/FBAN|FBAV/i.test(userAgent) && /iPhone|iPad/i.test(userAgent));
-        
-        console.log('=== FORM SUBMISSION DEBUG ===');
-        console.log('User Agent:', userAgent);
-        console.log('Is Twitter:', /Twitter/i.test(userAgent));
-        console.log('Is iPhone/iPad:', /iPhone|iPad/i.test(userAgent));
-        console.log('Twitter iOS detected:', isTwitterIOS);
-        console.log('Form action:', waitlistForm.action);
-        console.log('Form method:', waitlistForm.method);
-        console.log('Form target:', waitlistForm.target);
-        
-        // For Twitter iOS: Use traditional form POST submission (no JavaScript network calls)
-        if (isTwitterIOS) {
-            console.log('Using traditional POST form submission for Twitter iOS');
-            
-            // Don't prevent default - let the form submit normally via POST
-            // The form will submit to hidden iframe (no page navigation)
-            
-            // Show loading state
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining...';
-            submitBtn.disabled = true;
-            
-            // Show success after timeout (we can't detect iframe load on Twitter iOS)
-            setTimeout(() => {
-                console.log('Twitter iOS: Assuming form submission success');
-                waitlistForm.style.display = 'none';
-                successMessage.style.display = 'block';
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
-                submitBtn.disabled = false;
-                showSuccess('Welcome to the waitlist! We\'ll notify you when Reform is ready.');
-                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 3000);
-            
-            // Let form submit naturally (don't preventDefault)
-            return;
-        }
-        
-        // For all other browsers: Use JavaScript method
+        // Always prevent default and use JavaScript (works for ALL browsers now!)
         e.preventDefault();
         
         // Show loading state
@@ -135,9 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
     
-    // Submit to Google Apps Script using form submission (bypasses CORS)
+    // Submit via Netlify API (works on all browsers including Twitter iOS!)
     function submitToGoogleSheets(email) {
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec';
+        // Use relative path - works on Netlify
+        const API_URL = '/.netlify/functions/submit';
         
         // Flag to prevent double success messages
         let successHandled = false;
@@ -171,144 +131,43 @@ document.addEventListener('DOMContentLoaded', function() {
             trackWaitlistSignup(email);
         }
         
-        // Detect if we're in an in-app browser (Twitter, Facebook, Instagram, etc.)
-        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        const isInAppBrowser = /FBAN|FBAV|Twitter|Instagram|LinkedIn|Line|WeChat|Snapchat/i.test(userAgent);
+        // NEW: Use Netlify API for ALL browsers (including Twitter iOS!)
+        // Since the API is on the same domain, Twitter iOS won't block it
         
-        console.log('User Agent:', userAgent);
-        console.log('In-app browser detected:', isInAppBrowser);
+        console.log('Submitting via Netlify API');
+        console.log('User Agent:', navigator.userAgent);
         
-        // For in-app browsers, use multiple submission methods for reliability
-        if (isInAppBrowser) {
-            console.log('Using in-app browser method (GET with multiple fallbacks)');
-            
-            // Encode parameters
-            const params = new URLSearchParams({
+        // Use fetch to submit to our API
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
                 email: email,
-                source: 'landing_page_inapp',
-                timestamp: new Date().toISOString()
-            });
-            
-            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
-            
-            // Method 1: Navigator.sendBeacon (most reliable for in-app browsers)
-            // This is specifically designed for analytics and works even when page is unloading
-            if (navigator.sendBeacon) {
-                try {
-                    const sent = navigator.sendBeacon(url);
-                    console.log('sendBeacon attempted:', sent ? 'success' : 'failed');
-                } catch (e) {
-                    console.log('sendBeacon error:', e.message);
-                }
+                source: 'landing_page'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('API response:', data);
+            if (data.success) {
+                handleSuccess();
             } else {
-                console.log('sendBeacon not available');
+                throw new Error(data.error || 'Unknown error');
             }
+        })
+        .catch(error => {
+            console.error('Submission error:', error);
+            showError('Something went wrong. Please try again.');
             
-            // Method 2: Image beacon (traditional method)
-            const img = new Image();
-            img.style.display = 'none';
-            img.style.position = 'absolute';
-            img.style.width = '1px';
-            img.style.height = '1px';
-            
-            img.onload = function() {
-                console.log('Image beacon loaded successfully');
-                handleSuccess();
-            };
-            
-            img.onerror = function() {
-                console.log('Image beacon error (request still sent)');
-                handleSuccess(); // Still count as success
-            };
-            
-            img.src = url;
-            document.body.appendChild(img);
-            
-            // Method 2: Fetch with no-cors (sends request even if response blocked)
-            setTimeout(() => {
-                try {
-                    fetch(url, { 
-                        mode: 'no-cors',
-                        cache: 'no-cache'
-                    }).catch(() => {
-                        console.log('Fetch fallback completed');
-                    });
-                } catch (e) {
-                    console.log('Fetch not available');
-                }
-            }, 100);
-            
-            // Method 3: XMLHttpRequest (more reliable in some in-app browsers)
-            setTimeout(() => {
-                try {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('GET', url, true);
-                    xhr.send();
-                    console.log('XMLHttpRequest sent');
-                } catch (e) {
-                    console.log('XMLHttpRequest error (expected)');
-                }
-            }, 200);
-            
-            // Method 4: Form submission with hidden iframe
-            setTimeout(() => {
-                try {
-                    const iframe = document.createElement('iframe');
-                    iframe.name = 'submitFrame';
-                    iframe.style.display = 'none';
-                    document.body.appendChild(iframe);
-                    
-                    const form = document.createElement('form');
-                    form.method = 'GET';
-                    form.action = GOOGLE_SCRIPT_URL;
-                    form.target = 'submitFrame';
-                    form.style.display = 'none';
-                    
-                    const emailInput = document.createElement('input');
-                    emailInput.name = 'email';
-                    emailInput.value = email;
-                    form.appendChild(emailInput);
-                    
-                    const sourceInput = document.createElement('input');
-                    sourceInput.name = 'source';
-                    sourceInput.value = 'landing_page_inapp';
-                    form.appendChild(sourceInput);
-                    
-                    document.body.appendChild(form);
-                    form.submit();
-                    console.log('Form GET with iframe submitted');
-                    
-                    setTimeout(() => {
-                        if (form.parentNode) form.remove();
-                        if (iframe.parentNode) iframe.remove();
-                    }, 1000);
-                } catch (e) {
-                    console.log('Form fallback error:', e.message);
-                }
-            }, 300);
-            
-            // Method 5: Link prefetch (works in some restrictive browsers)
-            setTimeout(() => {
-                try {
-                    const link = document.createElement('link');
-                    link.rel = 'prefetch';
-                    link.href = url;
-                    link.as = 'fetch';
-                    document.head.appendChild(link);
-                    console.log('Link prefetch created');
-                } catch (e) {
-                    console.log('Link prefetch error:', e.message);
-                }
-            }, 400);
-            
-            // Success timeout (data is sent even if we can't confirm)
-            setTimeout(() => {
-                console.log('In-app browser timeout - data submitted');
-                handleSuccess();
-            }, 2000);
-            
-            return;
-        }
+            // Reset button
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
+            submitBtn.disabled = false;
+        });
+        
+        return;
         
         // Standard method for regular browsers (Safari, Chrome, Firefox)
         console.log('Using standard browser method (POST with iframe)');
