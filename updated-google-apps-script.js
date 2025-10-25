@@ -62,29 +62,28 @@ function doPost(e) {
     console.log('Last row after:', sheet.getLastRow());
     
     // Send success response
-    const result = {
-      success: true, 
-      message: 'Email added to waitlist',
-      email: email,
-      timestamp: timestamp.toISOString()
-    };
-    
-    return response.setContent(JSON.stringify(result));
+    // Return HTML instead of JSON to avoid Google Drive error
+    return HtmlService.createHtmlOutput(
+      '<html><body>' +
+      '<h1>Success!</h1>' +
+      '<p>Email added to waitlist: ' + email + '</p>' +
+      '<p>You can close this window.</p>' +
+      '<script>window.close();</script>' +
+      '</body></html>'
+    );
       
   } catch (error) {
     console.error('Error in doPost:', error);
     
-    // Send error response
-    const errorResponse = ContentService.createTextOutput();
-    errorResponse.setMimeType(ContentService.MimeType.JSON);
-    
-    const errorResult = {
-      success: false, 
-      message: 'Error processing submission: ' + error.toString(),
-      error: error.toString()
-    };
-    
-    return errorResponse.setContent(JSON.stringify(errorResult));
+    // Send error response as HTML
+    return HtmlService.createHtmlOutput(
+      '<html><body>' +
+      '<h1>Error</h1>' +
+      '<p>There was an error processing your submission.</p>' +
+      '<p>Error: ' + error.toString() + '</p>' +
+      '<p>Please try again or contact support.</p>' +
+      '</body></html>'
+    );
   }
 }
 
