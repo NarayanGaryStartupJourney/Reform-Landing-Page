@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Browser Debug</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+        
+        p {
+            margin: 8px 0;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .status.yes {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .status.no {
+            background: #ff0000;
+            color: #fff;
+        }
+        
+        input[type="email"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #1DA1F2;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+        }
+        
+        .log {
+            background: #000;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .log-entry {
+            margin: 4px 0;
+            padding: 4px;
+        }
+        
+        .log-entry.success {
+            color: #00ff00;
+        }
+        
+        .log-entry.error {
+            color: #ff0000;
+        }
+        
+        .log-entry.warning {
+            color: #ffd700;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .alert.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+        }
+        
+        .alert.error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐦 Twitter Browser Debug</h1>
+        
+        <div class="box">
+            <h2>Browser Detection</h2>
+            <p><strong>User Agent:</strong><br><span id="userAgent"></span></p>
+            <p><strong>Is Twitter Browser:</strong> <span id="isTwitter" class="status"></span></p>
+            <p><strong>Detected Method:</strong> <span id="method"></span></p>
+        </div>
+        
+        <div class="box">
+            <h2>Form Test</h2>
+            <form id="testForm">
+                <input type="email" id="email" placeholder="test@example.com" required>
+                <button type="submit" id="submitBtn">Submit to Google Sheets</button>
+            </form>
+            <div id="successAlert" class="alert success">
+                ✅ Submitted! Check your Google Sheet
+            </div>
+            <div id="errorAlert" class="alert error">
+                ❌ Submission failed
+            </div>
+        </div>
+        
+        <div class="box">
+            <h2>Console Log</h2>
+            <div id="log" class="log"></div>
+        </div>
+        
+        <div class="box">
+            <h2>Testing Tips</h2>
+            <p>1. Check if "Is Twitter Browser" shows YES</p>
+            <p>2. Submit the form and watch the logs</p>
+            <p>3. Check your <a href="https://docs.google.com/spreadsheets/d/1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8/edit" style="color: #ffd700;" target="_blank">Google Sheet</a></p>
+            <p>4. Look for source: "twitter_debug"</p>
+        </div>
+    </div>
+    
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec';
+        
+        // Logger
+        function log(message, type = 'info') {
+            const logBox = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+            console.log(`[${type}]`, message);
+        }
+        
+        // Detect browser
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        
+        // Enhanced Twitter detection
+        const isTwitter = /Twitter/i.test(userAgent) || 
+                         /FBAN|FBAV/i.test(userAgent) ||
+                         /Instagram/i.test(userAgent) ||
+                         /LinkedIn/i.test(userAgent);
+        
+        // Check specific Twitter patterns
+        const isTwitterSpecific = userAgent.includes('Twitter') || 
+                                  userAgent.includes('TwitterAndroid') ||
+                                  userAgent.includes('TwitteriOS');
+        
+        // Display detection results
+        document.getElementById('userAgent').textContent = userAgent;
+        document.getElementById('isTwitter').textContent = isTwitter ? 'YES' : 'NO';
+        document.getElementById('isTwitter').className = `status ${isTwitter ? 'yes' : 'no'}`;
+        document.getElementById('method').textContent = isTwitter ? 'GET (Image Beacon)' : 'POST (iframe)';
+        
+        log('Page loaded', 'info');
+        log(`User Agent: ${userAgent}`, 'info');
+        log(`Twitter detected: ${isTwitter}`, isTwitter ? 'success' : 'warning');
+        log(`Twitter specific: ${isTwitterSpecific}`, 'info');
+        
+        // Form submission
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            successAlert.style.display = 'none';
+            errorAlert.style.display = 'none';
+            
+            log('=== SUBMISSION STARTED ===', 'warning');
+            log(`Email: ${email}`, 'info');
+            log(`Method: ${isTwitter ? 'Image Beacon (GET)' : 'iframe (POST)'}`, 'info');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            let successHandled = false;
+            
+            function handleSuccess() {
+                if (successHandled) return;
+                successHandled = true;
+                
+                log('✅ SUCCESS!', 'success');
+                successAlert.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit to Google Sheets';
+            }
+            
+            function handleError(msg) {
+                log(`❌ ERROR: ${msg}`, 'error');
+                errorAlert.style.display = 'block';
+                errorAlert.textContent = `❌ ${msg}`;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit to Google Sheets';
+            }
+            
+            if (isTwitter) {
+                log('Using IMAGE BEACON method', 'warning');
+                
+                // Method 1: Image beacon
+                const params = new URLSearchParams({
+                    email: email,
+                    source: 'twitter_debug',
+                    timestamp: new Date().toISOString(),
+                    ua: userAgent.substring(0, 50)
+                });
+                
+                const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+                log(`URL: ${url.substring(0, 80)}...`, 'info');
+                
+                // Create multiple fallback methods
+                let method1Done = false;
+                let method2Done = false;
+                let method3Done = false;
+                
+                // Method 1: Image element
+                log('Trying method 1: Image element', 'info');
+                const img = new Image();
+                img.style.display = 'none';
+                img.style.position = 'absolute';
+                img.style.width = '1px';
+                img.style.height = '1px';
+                
+                img.onload = function() {
+                    method1Done = true;
+                    log('Method 1: Image loaded successfully!', 'success');
+                    handleSuccess();
+                };
+                
+                img.onerror = function() {
+                    method1Done = true;
+                    log('Method 1: Image error (request still sent)', 'warning');
+                    if (!method2Done && !method3Done) {
+                        handleSuccess(); // Still count as success
+                    }
+                };
+                
+                img.src = url;
+                document.body.appendChild(img);
+                log('Image element created and appended', 'info');
+                
+                // Method 2: Fetch (will fail due to CORS but request is sent)
+                log('Trying method 2: Fetch request', 'info');
+                setTimeout(() => {
+                    fetch(url, { mode: 'no-cors' })
+                        .then(() => {
+                            method2Done = true;
+                            log('Method 2: Fetch completed', 'success');
+                            handleSuccess();
+                        })
+                        .catch((err) => {
+                            method2Done = true;
+                            log('Method 2: Fetch error (expected, request sent)', 'warning');
+                        });
+                }, 100);
+                
+                // Method 3: Script tag injection
+                log('Trying method 3: Script tag', 'info');
+                setTimeout(() => {
+                    const script = document.createElement('script');
+                    script.src = url;
+                    script.onerror = function() {
+                        method3Done = true;
+                        log('Method 3: Script error (expected)', 'warning');
+                    };
+                    document.body.appendChild(script);
+                    log('Script element created and appended', 'info');
+                }, 200);
+                
+                // Final timeout
+                setTimeout(() => {
+                    log('Timeout reached - assuming success', 'warning');
+                    handleSuccess();
+                }, 3000);
+                
+            } else {
+                log('Using IFRAME method', 'warning');
+                
+                // Standard iframe method
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = GOOGLE_SCRIPT_URL;
+                form.target = 'testFrame';
+                form.style.display = 'none';
+                
+                const emailField = document.createElement('input');
+                emailField.name = 'email';
+                emailField.value = email;
+                
+                const sourceField = document.createElement('input');
+                sourceField.name = 'source';
+                sourceField.value = 'twitter_debug_iframe';
+                
+                form.appendChild(emailField);
+                form.appendChild(sourceField);
+                
+                const iframe = document.createElement('iframe');
+                iframe.name = 'testFrame';
+                iframe.style.display = 'none';
+                
+                iframe.onload = function() {
+                    log('iframe loaded', 'success');
+                    handleSuccess();
+                };
+                
+                document.body.appendChild(iframe);
+                document.body.appendChild(form);
+                
+                log('Form and iframe created', 'info');
+                form.submit();
+                log('Form submitted', 'info');
+                
+                setTimeout(() => {
+                    log('iframe timeout', 'warning');
+                    handleSuccess();
+                }, 2500);
+            }
+        });
+    </script>
+</body>
+</html>
+

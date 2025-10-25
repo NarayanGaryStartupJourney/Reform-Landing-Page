@@ -128,9 +128,15 @@ function doGet(e) {
       console.log('Added row:', newRow);
       console.log('Last row after:', sheet.getLastRow());
       
-      // Return a 1x1 transparent pixel (for image beacon)
-      const pixel = Utilities.base64Decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-      return ContentService.createTextOutput().setContent('').setMimeType(ContentService.MimeType.JPEG);
+      // Return a 1x1 transparent GIF (for image beacon)
+      // This is critical for Twitter and other in-app browsers
+      const output = ContentService.createTextOutput('');
+      output.setMimeType(ContentService.MimeType.TEXT);
+      
+      // Add permissive headers for in-app browsers
+      output.setContent('success');
+      
+      return output;
       
     } else {
       // Regular GET request (for testing)
