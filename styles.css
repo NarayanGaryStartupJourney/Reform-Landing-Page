@@ -1152,7 +1152,7 @@ body::after {
 
 /* Footer Simple */
 .footer {
-    background: #0a0817;
+    background: transparent;
     color: rgba(255, 255, 255, 0.6);
     padding: 30px 0;
 }
