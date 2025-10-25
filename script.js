@@ -94,10 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
     
-    // Submit via Netlify API (works on all browsers including Twitter iOS!)
+    // Submit to Google Apps Script using form submission (bypasses CORS)
     function submitToGoogleSheets(email) {
-        // Use relative path - works on Netlify
-        const API_URL = '/.netlify/functions/submit';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec';
         
         // Flag to prevent double success messages
         let successHandled = false;
@@ -131,43 +130,36 @@ document.addEventListener('DOMContentLoaded', function() {
             trackWaitlistSignup(email);
         }
         
-        // NEW: Use Netlify API for ALL browsers (including Twitter iOS!)
-        // Since the API is on the same domain, Twitter iOS won't block it
+        // Detect if we're in Twitter iOS - show helpful message
+        const userAgent = navigator.userAgent || '';
+        const isTwitterIOS = /Twitter/i.test(userAgent) && /iPhone|iPad/i.test(userAgent);
         
-        console.log('Submitting via Netlify API');
-        console.log('User Agent:', navigator.userAgent);
+        if (isTwitterIOS) {
+            console.log('Twitter iOS detected - using standard method');
+            // Twitter iOS blocks external submissions, but we'll try anyway
+            // User will need to "Open in Safari" if it doesn't work
+        }
         
-        // Use fetch to submit to our API
-        fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        // Use navigator.sendBeacon for all in-app browsers (most reliable)
+        const isInAppBrowser = /FBAN|FBAV|Twitter|Instagram|LinkedIn/i.test(userAgent);
+        
+        if (isInAppBrowser && navigator.sendBeacon) {
+            console.log('Using sendBeacon for in-app browser');
+            const params = new URLSearchParams({
                 email: email,
-                source: 'landing_page'
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('API response:', data);
-            if (data.success) {
-                handleSuccess();
-            } else {
-                throw new Error(data.error || 'Unknown error');
-            }
-        })
-        .catch(error => {
-            console.error('Submission error:', error);
-            showError('Something went wrong. Please try again.');
+                source: 'landing_page_inapp',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            navigator.sendBeacon(url);
             
-            // Reset button
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
-            submitBtn.disabled = false;
-        });
-        
-        return;
+            // Show success after delay (we can't confirm, but request is sent)
+            setTimeout(() => {
+                console.log('sendBeacon completed, showing success');
+                handleSuccess();
+            }, 2000);
+            return;
+        }
         
         // Standard method for regular browsers (Safari, Chrome, Firefox)
         console.log('Using standard browser method (POST with iframe)');
