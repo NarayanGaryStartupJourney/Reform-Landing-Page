@@ -954,3 +954,220 @@ body {
         height: 400px;
     }
 }
+
+/* Minimal Design Overrides */
+.hero {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+.hero-container {
+    grid-template-columns: 1fr !important;
+    max-width: 900px !important;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-content-centered {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero-title-large {
+    font-size: 4.5rem !important;
+    font-weight: 800 !important;
+    line-height: 1.1 !important;
+    margin-bottom: 30px !important;
+    color: #ffffff !important;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hero-description-simple {
+    font-size: 1.4rem !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    margin-bottom: 50px !important;
+    line-height: 1.6 !important;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inline-waitlist-form {
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+.inline-waitlist-form .waitlist-form {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.inline-waitlist-form .form-group {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+}
+
+.inline-waitlist-form input[type="email"] {
+    padding: 18px 24px;
+    font-size: 1.1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.inline-waitlist-form input[type="email"]::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.inline-waitlist-form input[type="email"]:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.inline-waitlist-form .submit-btn {
+    padding: 18px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+}
+
+.inline-waitlist-form .submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
+}
+
+.inline-waitlist-form .form-disclaimer {
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+}
+
+.inline-waitlist-form .success-message {
+    background: rgba(99, 102, 241, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px solid #6366f1;
+    text-align: center;
+}
+
+.inline-waitlist-form .success-message i {
+    font-size: 4rem;
+    color: #6366f1;
+    margin-bottom: 20px;
+}
+
+.inline-waitlist-form .success-message h3 {
+    color: #ffffff;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.inline-waitlist-form .success-message p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+}
+
+/* Footer Simple */
+.footer {
+    background: #0a0817;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 30px 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-brand p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-links-simple {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.footer-links-simple a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links-simple a:hover {
+    color: #6366f1;
+}
+
+.footer-links-simple span {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.footer-bottom {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .hero-title-large {
+        font-size: 2.5rem !important;
+    }
+    
+    .hero-description-simple {
+        font-size: 1.1rem !important;
+    }
+    
+    .inline-waitlist-form .waitlist-form {
+        padding: 30px 20px;
+    }
+    
+    .inline-waitlist-form .form-group {
+        gap: 12px;
+    }
+}
