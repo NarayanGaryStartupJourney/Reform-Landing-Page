@@ -148,7 +148,20 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
             
-            // Method 1: Image beacon (most reliable)
+            // Method 1: Navigator.sendBeacon (most reliable for in-app browsers)
+            // This is specifically designed for analytics and works even when page is unloading
+            if (navigator.sendBeacon) {
+                try {
+                    const sent = navigator.sendBeacon(url);
+                    console.log('sendBeacon attempted:', sent ? 'success' : 'failed');
+                } catch (e) {
+                    console.log('sendBeacon error:', e.message);
+                }
+            } else {
+                console.log('sendBeacon not available');
+            }
+            
+            // Method 2: Image beacon (traditional method)
             const img = new Image();
             img.style.display = 'none';
             img.style.position = 'absolute';
@@ -194,13 +207,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 200);
             
-            // Method 4: Form submission as fallback
+            // Method 4: Form submission with hidden iframe
             setTimeout(() => {
                 try {
+                    const iframe = document.createElement('iframe');
+                    iframe.name = 'submitFrame';
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                    
                     const form = document.createElement('form');
                     form.method = 'GET';
                     form.action = GOOGLE_SCRIPT_URL;
-                    form.target = '_blank';
+                    form.target = 'submitFrame';
                     form.style.display = 'none';
                     
                     const emailInput = document.createElement('input');
@@ -214,12 +232,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     form.appendChild(sourceInput);
                     
                     document.body.appendChild(form);
-                    setTimeout(() => form.remove(), 500);
-                    console.log('Form GET fallback prepared');
+                    form.submit();
+                    console.log('Form GET with iframe submitted');
+                    
+                    setTimeout(() => {
+                        if (form.parentNode) form.remove();
+                        if (iframe.parentNode) iframe.remove();
+                    }, 1000);
                 } catch (e) {
-                    console.log('Form fallback error');
+                    console.log('Form fallback error:', e.message);
                 }
             }, 300);
+            
+            // Method 5: Link prefetch (works in some restrictive browsers)
+            setTimeout(() => {
+                try {
+                    const link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.href = url;
+                    link.as = 'fetch';
+                    document.head.appendChild(link);
+                    console.log('Link prefetch created');
+                } catch (e) {
+                    console.log('Link prefetch error:', e.message);
+                }
+            }, 400);
             
             // Success timeout (data is sent even if we can't confirm)
             setTimeout(() => {
