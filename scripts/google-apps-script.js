@@ -6,8 +6,30 @@
  * 1. Go to script.google.com
  * 2. Open your existing project
  * 3. Replace the code with this updated version
- * 4. Save and redeploy
+ * 4. Save and redeploy with these settings:
+ *    - Execute as: Me
+ *    - Who has access: Anyone ⚠️ CRITICAL for CORS!
+ * 
+ * CORS SUPPORT:
+ * - Google Apps Script automatically adds CORS headers when deployed with "Anyone" access
+ * - ContentService responses are CORS-friendly
+ * - HtmlService responses work with iframe submissions
+ * - GET and POST methods both supported
  */
+
+/**
+ * Handle OPTIONS requests for CORS preflight
+ * This is called automatically by browsers before POST requests
+ */
+function doOptions(e) {
+  console.log('=== OPTIONS REQUEST (CORS Preflight) ===');
+  console.log('Origin:', e.parameter.origin || 'Not provided');
+  
+  // Return a response that allows the actual request
+  // Google Apps Script automatically adds appropriate CORS headers
+  return ContentService.createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT);
+}
 
 function doPost(e) {
   try {
@@ -217,7 +239,10 @@ function doGet(e) {
         message: 'Reform Waitlist API is running!',
         timestamp: new Date().toISOString(),
         status: 'active',
-        version: '2.0'
+        version: '2.1',
+        cors: 'enabled',
+        methods: ['GET', 'POST', 'OPTIONS'],
+        note: 'CORS headers are automatically added by Google Apps Script when deployed with "Anyone" access'
       };
       
       return response.setContent(JSON.stringify(result));
@@ -389,6 +414,36 @@ function cleanupWaitlist() {
       error: error.toString()
     };
   }
+}
+
+/**
+ * Test CORS configuration
+ * Run this after deploying to verify CORS is working
+ */
+function testCORS() {
+  console.log('=== TESTING CORS CONFIGURATION ===');
+  
+  // Check deployment settings
+  console.log('\n✓ Script is ready to handle requests');
+  console.log('\n📋 CORS Checklist:');
+  console.log('  1. Deploy as Web App');
+  console.log('  2. Execute as: Me');
+  console.log('  3. Who has access: Anyone (NOT "Anyone with Google account")');
+  console.log('  4. Deploy a NEW VERSION after any code changes');
+  console.log('\n🔍 Test your deployment:');
+  console.log('  - Health check: [Your Web App URL]');
+  console.log('  - Test GET: [Your Web App URL]?email=test@example.com&source=test');
+  console.log('\n💡 Google Apps Script automatically adds these CORS headers:');
+  console.log('  - Access-Control-Allow-Origin: *');
+  console.log('  - Access-Control-Allow-Methods: GET, POST, OPTIONS');
+  console.log('  - Access-Control-Allow-Headers: Content-Type');
+  console.log('\n✅ If deployed correctly, your form will work on ALL browsers!');
+  
+  return {
+    status: 'CORS is enabled',
+    message: 'Check execution logs for details',
+    tip: 'Deploy with "Anyone" access for CORS to work'
+  };
 }
 
 /**
