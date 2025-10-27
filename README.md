@@ -253,3 +253,9 @@ If you need help with customization or deployment:
 **Ready to launch your fitness app?** 🏋️‍♂️
 
 This landing page is designed to convert visitors into waitlist signups. Customize the content, connect your backend, and start acquiring early users for Reform!
+
+
+
+## Bugs I encountered
+- For the google script, make sure anyone can execute the script to avoid users signing up while signed out of their google accounts and signup submission not going all the way through.
+- Make sure the script "Executes at me (nmanivan97@gmail.com)" to make sure the proper permissions are in place.
