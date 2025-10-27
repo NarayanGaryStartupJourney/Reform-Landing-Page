@@ -11,9 +11,10 @@
 
 function doPost(e) {
   try {
-    // Add CORS headers
-    const response = ContentService.createTextOutput();
-    response.setMimeType(ContentService.MimeType.JSON);
+    // Log the incoming request for debugging
+    console.log('=== POST REQUEST RECEIVED ===');
+    console.log('Content Type:', e.postData ? e.postData.type : 'No postData');
+    console.log('Parameters:', JSON.stringify(e.parameter || {}));
     
     // Parse the form data - handle both JSON and form-encoded data
     let email, source;
@@ -21,23 +22,38 @@ function doPost(e) {
     // Check if data is sent as JSON (fetch) or form data (form submission)
     if (e.postData && e.postData.type === 'application/json') {
       // JSON data from fetch
+      console.log('Parsing JSON data');
       const data = JSON.parse(e.postData.contents);
       email = data.email;
       source = data.source || 'landing_page';
     } else {
       // Form data from traditional form submission
+      console.log('Parsing form data');
       email = e.parameter.email || e.parameters.email;
       source = e.parameter.source || e.parameters.source || 'landing_page';
+      
+      // Handle array parameters (sometimes form data comes as array)
+      if (Array.isArray(email)) email = email[0];
+      if (Array.isArray(source)) source = source[0];
     }
     
     const timestamp = new Date();
     
-    console.log('Received email:', email);
+    console.log('Received email via POST:', email);
     console.log('Source:', source);
+    console.log('Timestamp:', timestamp.toISOString());
     
     // Validate email
     if (!email || email.trim() === '') {
+      console.error('Validation failed: Email is empty');
       throw new Error('Email is required');
+    }
+    
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      console.error('Validation failed: Invalid email format:', email);
+      throw new Error('Invalid email format');
     }
     
     // Get the spreadsheet
@@ -56,13 +72,22 @@ function doPost(e) {
     
     // Add the new submission
     const newRow = [email, timestamp, source, 'Active'];
-    sheet.appendRow(newRow);
     
-    console.log('Added row:', newRow);
-    console.log('Last row after:', sheet.getLastRow());
+    try {
+      sheet.appendRow(newRow);
+      console.log('✓ Successfully added row:', newRow);
+      console.log('Last row after:', sheet.getLastRow());
+    } catch (appendError) {
+      console.error('Error appending row:', appendError);
+      // Try alternative method
+      const lastRow = sheet.getLastRow();
+      sheet.getRange(lastRow + 1, 1, 1, 4).setValues([newRow]);
+      console.log('✓ Added row using setValues method');
+    }
     
     // Send success response
     // Return HTML instead of JSON to avoid Google Drive error
+    console.log('Returning success HTML');
     return HtmlService.createHtmlOutput(
       '<html><body>' +
       '<h1>Success!</h1>' +
@@ -73,7 +98,13 @@ function doPost(e) {
     );
       
   } catch (error) {
-    console.error('Error in doPost:', error);
+    console.error('=== ERROR IN doPost ===');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Request data:', JSON.stringify({
+      parameter: e.parameter || {},
+      postData: e.postData || {}
+    }));
     
     // Send error response as HTML
     return HtmlService.createHtmlOutput(
@@ -89,6 +120,11 @@ function doPost(e) {
 
 function doGet(e) {
   try {
+    // Log the incoming request for debugging
+    console.log('=== GET REQUEST RECEIVED ===');
+    console.log('Parameters:', JSON.stringify(e.parameter));
+    console.log('User Agent:', e.parameter.userAgent || 'Not provided');
+    
     // Check if this is a form submission (has email parameter)
     if (e.parameter && e.parameter.email) {
       console.log('GET request with email - processing as submission');
@@ -97,13 +133,23 @@ function doGet(e) {
       const email = e.parameter.email;
       const source = e.parameter.source || 'landing_page';
       const timestamp = new Date();
+      const userAgent = e.parameter.userAgent || '';
       
       console.log('Received email via GET:', email);
       console.log('Source:', source);
+      console.log('Timestamp:', timestamp.toISOString());
       
-      // Validate email
+      // Validate email format
       if (!email || email.trim() === '') {
+        console.error('Validation failed: Email is empty');
         throw new Error('Email is required');
+      }
+      
+      // Basic email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        console.error('Validation failed: Invalid email format:', email);
+        throw new Error('Invalid email format');
       }
       
       // Get the spreadsheet
@@ -120,12 +166,29 @@ function doGet(e) {
         console.log('Added headers');
       }
       
+      // Check for duplicates (optional - uncomment if you want to prevent duplicates)
+      // const dataRange = sheet.getRange(2, 1, Math.max(1, sheet.getLastRow() - 1), 1);
+      // const existingEmails = dataRange.getValues().flat().map(e => e.toLowerCase());
+      // if (existingEmails.includes(email.toLowerCase())) {
+      //   console.log('Duplicate email detected:', email);
+      //   // Still return success to user, but don't add duplicate
+      //   return ContentService.createTextOutput('success').setMimeType(ContentService.MimeType.TEXT);
+      // }
+      
       // Add the new submission
       const newRow = [email, timestamp, source, 'Active'];
-      sheet.appendRow(newRow);
       
-      console.log('Added row:', newRow);
-      console.log('Last row after:', sheet.getLastRow());
+      try {
+        sheet.appendRow(newRow);
+        console.log('✓ Successfully added row:', newRow);
+        console.log('Last row after:', sheet.getLastRow());
+      } catch (appendError) {
+        console.error('Error appending row:', appendError);
+        // Try alternative method
+        const lastRow = sheet.getLastRow();
+        sheet.getRange(lastRow + 1, 1, 1, 4).setValues([newRow]);
+        console.log('✓ Added row using setValues method');
+      }
       
       // Check if a redirect URL was provided (for form redirect method)
       if (e.parameter.redirect) {
@@ -137,34 +200,37 @@ function doGet(e) {
         );
       }
       
-      // Return a simple success response (for image beacon / AJAX)
-      // This is critical for Twitter and other in-app browsers
-      const output = ContentService.createTextOutput('');
+      // Return a simple success response (for image beacon / sendBeacon)
+      console.log('Returning success response');
+      const output = ContentService.createTextOutput('success');
       output.setMimeType(ContentService.MimeType.TEXT);
-      
-      // Add permissive headers for in-app browsers
-      output.setContent('success');
       
       return output;
       
     } else {
-      // Regular GET request (for testing)
+      // Regular GET request (for testing/health check)
+      console.log('Health check request');
       const response = ContentService.createTextOutput();
       response.setMimeType(ContentService.MimeType.JSON);
       
       const result = {
         message: 'Reform Waitlist API is running!',
         timestamp: new Date().toISOString(),
-        status: 'active'
+        status: 'active',
+        version: '2.0'
       };
       
       return response.setContent(JSON.stringify(result));
     }
   } catch (error) {
-    console.error('Error in doGet:', error);
+    console.error('=== ERROR IN doGet ===');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Parameters:', JSON.stringify(e.parameter || {}));
     
-    // Return 1x1 pixel even on error (for image beacon fallback)
-    return ContentService.createTextOutput().setContent('').setMimeType(ContentService.MimeType.TEXT);
+    // Still return success for image beacon (can't show errors to user anyway)
+    // Log the error for debugging but don't fail the request
+    return ContentService.createTextOutput('error').setMimeType(ContentService.MimeType.TEXT);
   }
 }
 

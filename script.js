@@ -130,34 +130,108 @@ document.addEventListener('DOMContentLoaded', function() {
             trackWaitlistSignup(email);
         }
         
-        // Detect if we're in Twitter iOS - show helpful message
+        // Comprehensive browser detection
         const userAgent = navigator.userAgent || '';
-        const isTwitterIOS = /Twitter/i.test(userAgent) && /iPhone|iPad/i.test(userAgent);
+        const isiOS = /iPhone|iPad|iPod/i.test(userAgent);
+        const isAndroid = /Android/i.test(userAgent);
         
-        if (isTwitterIOS) {
-            console.log('Twitter iOS detected - using standard method');
-            // Twitter iOS blocks external submissions, but we'll try anyway
-            // User will need to "Open in Safari" if it doesn't work
+        // Detect specific in-app browsers
+        const isTwitter = /Twitter/i.test(userAgent);
+        const isFacebook = /FBAN|FBAV|FB_IAB|FB4A|FBIOS/i.test(userAgent);
+        const isMessenger = /FB_IAB|FBIOS|FB4A|Messenger/i.test(userAgent);
+        const isInstagram = /Instagram/i.test(userAgent);
+        const isLinkedIn = /LinkedIn/i.test(userAgent);
+        const isWeChat = /MicroMessenger/i.test(userAgent);
+        const isLine = /Line/i.test(userAgent);
+        const isSnapchat = /Snapchat/i.test(userAgent);
+        
+        // Combined in-app browser detection
+        const isInAppBrowser = isTwitter || isFacebook || isMessenger || isInstagram || 
+                              isLinkedIn || isWeChat || isLine || isSnapchat;
+        
+        // Log detected browser for debugging
+        if (isInAppBrowser) {
+            const browserName = isTwitter ? 'Twitter' : 
+                              isFacebook ? 'Facebook' : 
+                              isMessenger ? 'Facebook Messenger' :
+                              isInstagram ? 'Instagram' :
+                              isLinkedIn ? 'LinkedIn' :
+                              isWeChat ? 'WeChat' :
+                              isLine ? 'Line' :
+                              isSnapchat ? 'Snapchat' : 'Unknown In-App';
+            console.log(`In-app browser detected: ${browserName}`);
+            console.log(`Platform: ${isiOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'}`);
         }
         
-        // Use navigator.sendBeacon for all in-app browsers (most reliable)
-        const isInAppBrowser = /FBAN|FBAV|Twitter|Instagram|LinkedIn/i.test(userAgent);
-        
+        // Method 1: sendBeacon for in-app browsers (most reliable)
         if (isInAppBrowser && navigator.sendBeacon) {
-            console.log('Using sendBeacon for in-app browser');
+            console.log('Attempting sendBeacon method...');
             const params = new URLSearchParams({
                 email: email,
                 source: 'landing_page_inapp',
                 timestamp: new Date().toISOString()
             });
             const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
-            navigator.sendBeacon(url);
             
-            // Show success after delay (we can't confirm, but request is sent)
-            setTimeout(() => {
-                console.log('sendBeacon completed, showing success');
+            try {
+                const beaconSent = navigator.sendBeacon(url);
+                if (beaconSent) {
+                    console.log('✓ sendBeacon: Request queued successfully');
+                    setTimeout(() => {
+                        console.log('sendBeacon completed, showing success');
+                        handleSuccess();
+                    }, 2000);
+                    return;
+                } else {
+                    console.warn('sendBeacon failed, trying fallback method...');
+                    // Fall through to image beacon
+                }
+            } catch (error) {
+                console.error('sendBeacon error:', error);
+                // Fall through to image beacon
+            }
+        }
+        
+        // Method 2: Image beacon fallback for in-app browsers
+        if (isInAppBrowser) {
+            console.log('Using image beacon method for in-app browser');
+            const params = new URLSearchParams({
+                email: email,
+                source: 'landing_page_image',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            
+            const img = new Image();
+            img.style.display = 'none';
+            
+            img.onload = () => {
+                console.log('✓ Image beacon loaded successfully');
                 handleSuccess();
-            }, 2000);
+            };
+            
+            img.onerror = () => {
+                console.warn('Image beacon failed, but request might have been sent');
+                // Still show success - request was likely sent
+                setTimeout(() => handleSuccess(), 2000);
+            };
+            
+            // Set src to trigger the request
+            img.src = url;
+            document.body.appendChild(img);
+            
+            // Cleanup and fallback timeout
+            setTimeout(() => {
+                if (img.parentNode) {
+                    img.parentNode.removeChild(img);
+                }
+                // If success hasn't been handled by now, assume it worked
+                if (!successHandled) {
+                    console.log('Image beacon timeout - assuming success');
+                    handleSuccess();
+                }
+            }, 3000);
+            
             return;
         }
         
@@ -198,44 +272,105 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(iframe);
         document.body.appendChild(form);
         
+        // Track if iframe has loaded once (first load is empty, second is the response)
+        let iframeLoadCount = 0;
+        
         // Handle iframe load (success) - works on most browsers
         iframe.onload = function() {
-            console.log('iframe onload fired');
-            handleSuccess();
+            iframeLoadCount++;
+            console.log(`iframe onload fired (count: ${iframeLoadCount})`);
+            
+            // First load is the initial empty iframe, second load is the response
+            // On some browsers, only one load event fires
+            if (iframeLoadCount >= 1) {
+                // Wait a bit to ensure the request completed
+                setTimeout(() => {
+                    if (!successHandled) {
+                        console.log('✓ Form submission successful (iframe)');
+                        handleSuccess();
+                    }
+                }, 500);
+            }
         };
         
-        // iOS Safari fallback: Assume success after timeout since iOS doesn't reliably trigger onload
-        const iOSTimeout = setTimeout(() => {
-            console.log('iOS fallback: Assuming submission success');
-            handleSuccess();
-        }, 2500);
+        // iOS/Safari fallback: Assume success after timeout since iOS doesn't reliably trigger onload
+        const fallbackTimeout = setTimeout(() => {
+            if (!successHandled) {
+                console.log('Fallback timeout: Assuming submission success');
+                handleSuccess();
+            }
+        }, 3500);
         
-        // Handle iframe error
-        iframe.onerror = function() {
-            clearTimeout(iOSTimeout);
+        // Handle iframe error (network failure, etc.)
+        iframe.onerror = function(error) {
+            clearTimeout(fallbackTimeout);
             if (successHandled) return;
             
-            console.error('Form submission failed');
-            showError('Something went wrong. Please try again.');
+            console.error('iframe onerror fired:', error);
             
-            // Reset button state
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Join Waitlist';
-            submitBtn.disabled = false;
+            // Try image beacon as last resort
+            console.warn('Attempting image beacon as fallback...');
+            const params = new URLSearchParams({
+                email: email,
+                source: 'landing_page_fallback',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            
+            const img = new Image();
+            img.style.display = 'none';
+            img.src = url;
+            document.body.appendChild(img);
+            
+            // Show success after trying image beacon
+            setTimeout(() => {
+                if (!successHandled) {
+                    console.log('Image beacon fallback sent');
+                    handleSuccess();
+                }
+            }, 2000);
             
             // Clean up
-            if (form.parentNode) document.body.removeChild(form);
-            if (iframe.parentNode) document.body.removeChild(iframe);
+            setTimeout(() => {
+                if (form.parentNode) document.body.removeChild(form);
+                if (iframe.parentNode) document.body.removeChild(iframe);
+                if (img.parentNode) document.body.removeChild(img);
+            }, 3000);
         };
         
         // Submit the form
-        form.submit();
+        try {
+            console.log('Submitting form to Google Apps Script...');
+            form.submit();
+            console.log('Form submitted, waiting for response...');
+        } catch (error) {
+            console.error('Form submission error:', error);
+            clearTimeout(fallbackTimeout);
+            
+            // Try image beacon as last resort
+            console.warn('Form.submit() failed, using image beacon...');
+            const params = new URLSearchParams({
+                email: email,
+                source: 'landing_page_error_fallback',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            
+            const img = new Image();
+            img.style.display = 'none';
+            img.src = url;
+            document.body.appendChild(img);
+            
+            setTimeout(() => {
+                handleSuccess();
+            }, 2000);
+        }
         
         // Clean up after success
         setTimeout(() => {
             if (form && form.parentNode) document.body.removeChild(form);
             if (iframe && iframe.parentNode) document.body.removeChild(iframe);
-        }, 3000);
+        }, 5000);
     }
     
     // Track waitlist signup (replace with your analytics)

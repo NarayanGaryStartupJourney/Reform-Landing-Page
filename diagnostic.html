@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reform - Diagnostic Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .info-box {
+            background: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .info-box strong {
+            color: #2d3748;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .info-box code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        #log {
+            background: #1a202c;
+            color: #48bb78;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 24px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .log-entry {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .log-entry::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+        }
+        .log-error {
+            color: #fc8181;
+        }
+        .log-error::before {
+            content: '✗';
+            color: #fc8181;
+        }
+        .log-success {
+            color: #68d391;
+        }
+        .log-success::before {
+            content: '✓';
+            color: #68d391;
+        }
+        .log-info {
+            color: #63b3ed;
+        }
+        .log-info::before {
+            content: 'ℹ';
+            color: #63b3ed;
+        }
+        .success-message {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            color: #22543d;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .error-message {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            color: #742a2a;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .test-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .test-btn {
+            padding: 8px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .test-btn:hover {
+            background: #3182ce;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Reform Diagnostic Test</h1>
+        <p class="subtitle">Test form submission and debug browser issues</p>
+        
+        <div class="info-box">
+            <strong>Browser Information:</strong>
+            <div id="browserInfo">Loading...</div>
+        </div>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="your@email.com" required>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">
+                🚀 Test Submission
+            </button>
+        </form>
+        
+        <div class="test-methods">
+            <button class="test-btn" onclick="testMethod('sendBeacon')">Test sendBeacon</button>
+            <button class="test-btn" onclick="testMethod('iframe')">Test iframe POST</button>
+            <button class="test-btn" onclick="testMethod('image')">Test Image Beacon</button>
+            <button class="test-btn" onclick="testMethod('fetch')">Test Fetch API</button>
+        </div>
+        
+        <div id="result"></div>
+        
+        <div id="log"></div>
+    </div>
+    
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtvjUlJBYADCta7dttvUByKP9Q3nLh/exec';
+        const logContainer = document.getElementById('log');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            displayBrowserInfo();
+            log('Diagnostic page loaded', 'success');
+        });
+        
+        // Display browser information
+        function displayBrowserInfo() {
+            const ua = navigator.userAgent;
+            const info = document.getElementById('browserInfo');
+            
+            // Detect browser type
+            const isTwitter = /Twitter/i.test(ua);
+            const isFacebook = /FBAN|FBAV|FB_IAB|FB4A|FBIOS/i.test(ua);
+            const isInstagram = /Instagram/i.test(ua);
+            const isLinkedIn = /LinkedIn/i.test(ua);
+            const isMessenger = /FB_IAB|FBIOS|FB4A|Messenger/i.test(ua);
+            const isSafari = /Safari/i.test(ua) && !/Chrome/i.test(ua);
+            const isChrome = /Chrome/i.test(ua) && !/Edge/i.test(ua);
+            const isiOS = /iPhone|iPad|iPod/i.test(ua);
+            const isAndroid = /Android/i.test(ua);
+            
+            let browserName = 'Unknown';
+            if (isTwitter) browserName = '🐦 Twitter In-App Browser';
+            else if (isMessenger) browserName = '💬 Facebook Messenger Browser';
+            else if (isFacebook) browserName = '📘 Facebook In-App Browser';
+            else if (isInstagram) browserName = '📸 Instagram In-App Browser';
+            else if (isLinkedIn) browserName = '💼 LinkedIn In-App Browser';
+            else if (isSafari) browserName = '🧭 Safari';
+            else if (isChrome) browserName = '🌐 Chrome';
+            
+            const platform = isiOS ? '📱 iOS' : isAndroid ? '🤖 Android' : '💻 Desktop';
+            
+            info.innerHTML = `
+                <code>Browser: ${browserName}</code><br>
+                <code>Platform: ${platform}</code><br>
+                <code>sendBeacon: ${navigator.sendBeacon ? '✅ Available' : '❌ Not Available'}</code>
+            `;
+            
+            log(`Detected: ${browserName} on ${platform}`, 'info');
+            log(`User Agent: ${ua}`, 'info');
+        }
+        
+        // Logging function
+        function log(message, type = 'default') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+        
+        // Form submission handler
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            
+            if (!email) {
+                showError('Please enter an email address');
+                return;
+            }
+            
+            // Clear previous results
+            resultDiv.innerHTML = '';
+            logContainer.innerHTML = '';
+            
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Testing...';
+            
+            log('Starting submission test...', 'info');
+            log(`Email: ${email}`, 'info');
+            
+            // Detect browser and choose method
+            const ua = navigator.userAgent;
+            const isInAppBrowser = /FBAN|FBAV|FB_IAB|FB4A|FBIOS|Messenger|Twitter|Instagram|LinkedIn/i.test(ua);
+            
+            log(`In-App Browser: ${isInAppBrowser ? 'YES' : 'NO'}`, 'info');
+            
+            if (isInAppBrowser) {
+                log('Using in-app browser method...', 'info');
+                await testInAppBrowserMethod(email);
+            } else {
+                log('Using standard browser method...', 'info');
+                await testStandardMethod(email);
+            }
+            
+            // Re-enable button
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🚀 Test Submission';
+            }, 3000);
+        });
+        
+        // Test in-app browser method (sendBeacon or image)
+        async function testInAppBrowserMethod(email) {
+            const params = new URLSearchParams({
+                email: email,
+                source: 'diagnostic_inapp',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            
+            // Try sendBeacon first
+            if (navigator.sendBeacon) {
+                log('Trying sendBeacon method...', 'info');
+                try {
+                    const success = navigator.sendBeacon(url);
+                    if (success) {
+                        log('✓ sendBeacon: Request queued', 'success');
+                    } else {
+                        log('✗ sendBeacon: Failed to queue', 'error');
+                        throw new Error('sendBeacon failed');
+                    }
+                } catch (error) {
+                    log(`✗ sendBeacon error: ${error.message}`, 'error');
+                    // Fallback to image beacon
+                    await testImageBeacon(email);
+                    return;
+                }
+            } else {
+                log('sendBeacon not available, using image beacon', 'info');
+                await testImageBeacon(email);
+                return;
+            }
+            
+            // Wait and show result
+            log('Waiting for submission to complete...', 'info');
+            setTimeout(() => {
+                showSuccess('Submission sent! Check your Google Sheet.');
+                log('✓ Test complete - check Google Sheet', 'success');
+            }, 2000);
+        }
+        
+        // Test image beacon method
+        async function testImageBeacon(email) {
+            log('Trying image beacon method...', 'info');
+            
+            const params = new URLSearchParams({
+                email: email,
+                source: 'diagnostic_image',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            
+            return new Promise((resolve) => {
+                const img = new Image();
+                
+                img.onload = () => {
+                    log('✓ Image beacon: Loaded successfully', 'success');
+                    showSuccess('Submission sent! Check your Google Sheet.');
+                    resolve(true);
+                };
+                
+                img.onerror = () => {
+                    log('✗ Image beacon: Failed to load', 'error');
+                    showError('Image beacon failed. Check console for details.');
+                    resolve(false);
+                };
+                
+                log(`Image URL: ${url}`, 'info');
+                img.src = url;
+                
+                // Fallback timeout
+                setTimeout(() => {
+                    log('Image beacon timeout - assuming success', 'info');
+                    showSuccess('Submission sent! Check your Google Sheet.');
+                    resolve(true);
+                }, 3000);
+            });
+        }
+        
+        // Test standard browser method (iframe POST)
+        async function testStandardMethod(email) {
+            log('Creating hidden form and iframe...', 'info');
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GOOGLE_SCRIPT_URL;
+            form.target = 'diagnosticFrame';
+            form.style.display = 'none';
+            
+            const emailField = document.createElement('input');
+            emailField.type = 'hidden';
+            emailField.name = 'email';
+            emailField.value = email;
+            
+            const sourceField = document.createElement('input');
+            sourceField.type = 'hidden';
+            sourceField.name = 'source';
+            sourceField.value = 'diagnostic_standard';
+            
+            const timestampField = document.createElement('input');
+            timestampField.type = 'hidden';
+            timestampField.name = 'timestamp';
+            timestampField.value = new Date().toISOString();
+            
+            form.appendChild(emailField);
+            form.appendChild(sourceField);
+            form.appendChild(timestampField);
+            
+            const iframe = document.createElement('iframe');
+            iframe.name = 'diagnosticFrame';
+            iframe.style.display = 'none';
+            
+            document.body.appendChild(iframe);
+            document.body.appendChild(form);
+            
+            let success = false;
+            
+            iframe.onload = function() {
+                if (!success) {
+                    success = true;
+                    log('✓ iframe onload fired', 'success');
+                    showSuccess('Submission successful! Check your Google Sheet.');
+                    cleanup();
+                }
+            };
+            
+            iframe.onerror = function() {
+                log('✗ iframe onerror fired', 'error');
+                showError('Submission failed. Check console for details.');
+                cleanup();
+            };
+            
+            // iOS Safari fallback
+            setTimeout(() => {
+                if (!success) {
+                    success = true;
+                    log('iOS fallback timeout - assuming success', 'info');
+                    showSuccess('Submission sent! Check your Google Sheet.');
+                    cleanup();
+                }
+            }, 3000);
+            
+            log('Submitting form...', 'info');
+            form.submit();
+            log('Form submitted, waiting for response...', 'info');
+            
+            function cleanup() {
+                setTimeout(() => {
+                    if (form && form.parentNode) document.body.removeChild(form);
+                    if (iframe && iframe.parentNode) document.body.removeChild(iframe);
+                    log('Cleaned up form and iframe', 'info');
+                }, 1000);
+            }
+        }
+        
+        // Test individual methods
+        async function testMethod(method) {
+            const email = document.getElementById('email').value.trim();
+            if (!email) {
+                showError('Please enter an email first');
+                return;
+            }
+            
+            logContainer.innerHTML = '';
+            document.getElementById('result').innerHTML = '';
+            log(`Testing ${method} method...`, 'info');
+            
+            switch(method) {
+                case 'sendBeacon':
+                    await testSendBeacon(email);
+                    break;
+                case 'iframe':
+                    await testStandardMethod(email);
+                    break;
+                case 'image':
+                    await testImageBeacon(email);
+                    break;
+                case 'fetch':
+                    await testFetch(email);
+                    break;
+            }
+        }
+        
+        // Test sendBeacon specifically
+        async function testSendBeacon(email) {
+            if (!navigator.sendBeacon) {
+                log('✗ sendBeacon not available', 'error');
+                showError('sendBeacon is not supported in this browser');
+                return;
+            }
+            
+            const params = new URLSearchParams({
+                email: email,
+                source: 'diagnostic_sendbeacon',
+                timestamp: new Date().toISOString()
+            });
+            const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+            
+            const success = navigator.sendBeacon(url);
+            if (success) {
+                log('✓ sendBeacon request queued', 'success');
+                showSuccess('Request sent! Check Google Sheet in 2 seconds.');
+            } else {
+                log('✗ sendBeacon failed', 'error');
+                showError('sendBeacon failed to queue request');
+            }
+        }
+        
+        // Test Fetch API (will likely fail due to CORS)
+        async function testFetch(email) {
+            log('Attempting fetch (will likely fail due to CORS)...', 'info');
+            
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        source: 'diagnostic_fetch',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                log('✓ Fetch succeeded (unexpected!)', 'success');
+                showSuccess('Fetch worked! Check your Google Sheet.');
+            } catch (error) {
+                log(`✗ Fetch failed (expected): ${error.message}`, 'error');
+                showError('Fetch failed due to CORS (this is normal)');
+            }
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="success-message">✅ ${message}</div>`;
+        }
+        
+        // Show error message
+        function showError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="error-message">❌ ${message}</div>`;
+        }
+    </script>
+</body>
+</html>
+
