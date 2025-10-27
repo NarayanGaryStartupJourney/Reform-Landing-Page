@@ -14,13 +14,44 @@ A modern, responsive landing page for ProFormance - an AI-powered exercise form 
 ## 📁 Project Structure
 
 ```
-proformance-landing-page/
-├── index.html          # Main HTML file
-├── styles.css          # CSS styles and responsive design
-├── script.js           # JavaScript functionality
-├── package.json        # Project configuration
-└── README.md          # This file
+reform-landing-page/
+├── index.html              # Main landing page
+├── styles.css              # Styles and responsive design
+├── script.js               # JavaScript functionality
+├── success.html            # Success page after waitlist signup
+├── package.json            # Project configuration
+├── site.webmanifest        # PWA manifest
+├── netlify.toml            # Netlify deployment config
+├── vercel.json             # Vercel deployment config
+├── render.yaml             # Render deployment config
+├── README.md               # This file
+│
+├── scripts/                # Scripts and backend code
+│   ├── google-apps-script.js   # Google Apps Script for waitlist
+│   ├── build.js                # Build script
+│   └── api/                    # API endpoints
+│       └── submit.js           # Form submission handler
+│
+├── docs/                   # Documentation
+│   ├── DEPLOYMENT.md       # Deployment guides
+│   ├── GOOGLE_SHEETS_SETUP.md
+│   ├── EMAIL_SETUP.md
+│   ├── QUICK_SETUP.md
+│   └── ...                 # Various setup guides
+│
+└── archive/                # Old test/debug files (for reference)
+    ├── debug-mobile.html
+    ├── twitter-ios-test.html
+    └── ...                 # Other archived files
 ```
+
+## 🗂️ What's Where
+
+- **Main Files**: `index.html`, `styles.css`, `script.js` - Core landing page files
+- **Google Apps Script**: `scripts/google-apps-script.js` - Backend for waitlist (includes cleanup utilities!)
+- **Documentation**: `docs/` - All setup guides and troubleshooting docs
+- **Archive**: `archive/` - Old test files kept for reference (can be deleted if not needed)
+- **Deployment Configs**: Root directory - Platform-specific config files
 
 ## 🛠️ Setup and Development
 

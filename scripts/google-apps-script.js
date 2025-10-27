@@ -217,3 +217,191 @@ function checkSpreadsheetAccess() {
     };
   }
 }
+
+/**
+ * Clean up the waitlist by removing duplicates and invalid entries
+ * Run this function from the Google Apps Script editor
+ */
+function cleanupWaitlist() {
+  try {
+    const SPREADSHEET_ID = '1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8';
+    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName('Waitlist') || spreadsheet.getActiveSheet();
+    
+    console.log('Starting cleanup...');
+    console.log('Initial rows:', sheet.getLastRow());
+    
+    // Get all data
+    const lastRow = sheet.getLastRow();
+    if (lastRow <= 1) {
+      console.log('No data to clean up (only headers or empty sheet)');
+      return {
+        success: true,
+        message: 'No data to clean up',
+        removedCount: 0
+      };
+    }
+    
+    const dataRange = sheet.getRange(2, 1, lastRow - 1, 4); // Skip header row
+    const data = dataRange.getValues();
+    
+    console.log('Total entries:', data.length);
+    
+    // Track unique emails and rows to keep
+    const uniqueEmails = new Map();
+    const validRows = [];
+    let duplicateCount = 0;
+    let invalidCount = 0;
+    let testCount = 0;
+    
+    // Process each row
+    data.forEach((row, index) => {
+      const email = row[0] ? row[0].toString().trim().toLowerCase() : '';
+      const timestamp = row[1];
+      const source = row[2];
+      const status = row[3];
+      
+      // Skip invalid entries (empty email)
+      if (!email || email === '') {
+        console.log('Removing invalid entry (empty email) at row', index + 2);
+        invalidCount++;
+        return;
+      }
+      
+      // Skip test entries
+      if (email.includes('test@') || email === 'test@example.com' || email.includes('example.com')) {
+        console.log('Removing test entry:', email);
+        testCount++;
+        return;
+      }
+      
+      // Check for duplicates - keep the first occurrence (oldest entry)
+      if (uniqueEmails.has(email)) {
+        console.log('Removing duplicate:', email, 'at row', index + 2);
+        duplicateCount++;
+        return;
+      }
+      
+      // This is a valid, unique entry
+      uniqueEmails.set(email, true);
+      validRows.push([email, timestamp, source, status]);
+    });
+    
+    console.log('Valid entries:', validRows.length);
+    console.log('Removed - Duplicates:', duplicateCount, 'Invalid:', invalidCount, 'Test:', testCount);
+    
+    // Clear all data (except headers)
+    if (lastRow > 1) {
+      sheet.getRange(2, 1, lastRow - 1, 4).clear();
+    }
+    
+    // Write back the cleaned data
+    if (validRows.length > 0) {
+      sheet.getRange(2, 1, validRows.length, 4).setValues(validRows);
+    }
+    
+    console.log('Cleanup complete!');
+    console.log('Final rows:', sheet.getLastRow());
+    
+    const totalRemoved = duplicateCount + invalidCount + testCount;
+    
+    return {
+      success: true,
+      message: 'Waitlist cleaned successfully!',
+      totalEntries: data.length,
+      validEntries: validRows.length,
+      removedTotal: totalRemoved,
+      removedDuplicates: duplicateCount,
+      removedInvalid: invalidCount,
+      removedTest: testCount
+    };
+    
+  } catch (error) {
+    console.error('Cleanup error:', error);
+    return {
+      success: false,
+      error: error.toString()
+    };
+  }
+}
+
+/**
+ * Preview what would be removed without actually removing anything
+ * Run this first to see what will be cleaned up
+ */
+function previewCleanup() {
+  try {
+    const SPREADSHEET_ID = '1-7LrlSC1cC9lv9yPyD6HziJAr2eLob2tiUITjV6ukz8';
+    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName('Waitlist') || spreadsheet.getActiveSheet();
+    
+    console.log('=== PREVIEW CLEANUP (no changes will be made) ===');
+    
+    const lastRow = sheet.getLastRow();
+    if (lastRow <= 1) {
+      console.log('No data to preview');
+      return { success: true, message: 'No data to clean up' };
+    }
+    
+    const dataRange = sheet.getRange(2, 1, lastRow - 1, 4);
+    const data = dataRange.getValues();
+    
+    const uniqueEmails = new Map();
+    const duplicates = [];
+    const invalid = [];
+    const testEntries = [];
+    
+    data.forEach((row, index) => {
+      const email = row[0] ? row[0].toString().trim().toLowerCase() : '';
+      const rowNum = index + 2;
+      
+      // Check invalid
+      if (!email || email === '') {
+        invalid.push(`Row ${rowNum}: (empty email)`);
+        return;
+      }
+      
+      // Check test entries
+      if (email.includes('test@') || email === 'test@example.com' || email.includes('example.com')) {
+        testEntries.push(`Row ${rowNum}: ${email}`);
+        return;
+      }
+      
+      // Check duplicates
+      if (uniqueEmails.has(email)) {
+        duplicates.push(`Row ${rowNum}: ${email} (duplicate of row ${uniqueEmails.get(email)})`);
+        return;
+      }
+      
+      uniqueEmails.set(email, rowNum);
+    });
+    
+    console.log('\n--- Duplicates to be removed:', duplicates.length, '---');
+    duplicates.forEach(d => console.log(d));
+    
+    console.log('\n--- Invalid entries to be removed:', invalid.length, '---');
+    invalid.forEach(i => console.log(i));
+    
+    console.log('\n--- Test entries to be removed:', testEntries.length, '---');
+    testEntries.forEach(t => console.log(t));
+    
+    console.log('\n=== SUMMARY ===');
+    console.log('Total entries:', data.length);
+    console.log('Valid unique entries:', uniqueEmails.size);
+    console.log('To be removed:', duplicates.length + invalid.length + testEntries.length);
+    
+    return {
+      success: true,
+      totalEntries: data.length,
+      validEntries: uniqueEmails.size,
+      toBeRemoved: duplicates.length + invalid.length + testEntries.length,
+      duplicates: duplicates,
+      invalid: invalid,
+      testEntries: testEntries
+    };
+    
+  } catch (error) {
+    console.error('Preview error:', error);
+    return { success: false, error: error.toString() };
+  }
+}

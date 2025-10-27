@@ -1,7 +1,7 @@
 [build]
   publish = "."
   command = "echo 'Static site - no build needed'"
-  functions = "api"
+  functions = "scripts/api"
 
 [build.environment]
   NODE_VERSION = "18"
