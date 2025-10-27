@@ -62,7 +62,7 @@ exports.handler = async function(event, context) {
     const response = await fetch(googleUrl, {
       method: 'GET',
       headers: {
-        'User-Agent': 'ProFormance-Proxy/1.0'
+        'User-Agent': 'Reform-Proxy/1.0'
       }
     });
     

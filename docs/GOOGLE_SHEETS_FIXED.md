@@ -12,7 +12,7 @@ Your form is already configured to work with Google Sheets! Here's how to set it
 ## 🚀 **Step 1: Create Google Spreadsheet (2 minutes)**
 
 1. **Go to [sheets.google.com](https://sheets.google.com)**
-2. **Create new spreadsheet** → Name it "ProFormance Waitlist"
+2. **Create new spreadsheet** → Name it "Reform Waitlist"
 3. **Add headers in row 1:**
    - A1: `Email`
    - B1: `Timestamp`
@@ -26,7 +26,7 @@ Your form is already configured to work with Google Sheets! Here's how to set it
 2. **Click "New Project"**
 3. **Delete the default code** and paste the code from `working-google-apps-script.js`
 4. **Replace `YOUR_SPREADSHEET_ID`** with your actual spreadsheet ID
-5. **Save** (Ctrl+S) → Name it "ProFormance Waitlist Handler"
+5. **Save** (Ctrl+S) → Name it "Reform Waitlist Handler"
 
 ## 🚀 **Step 3: Deploy the Script (2 minutes)**
 
@@ -101,6 +101,6 @@ To test your script directly:
 
 ---
 
-**Your ProFormance waitlist will now collect emails directly into Google Sheets! 📊**
+**Your Reform waitlist will now collect emails directly into Google Sheets! 📊**
 
 Every signup will appear instantly in your spreadsheet, giving you real-time visibility into your growing user base.

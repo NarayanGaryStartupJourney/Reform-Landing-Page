@@ -1,4 +1,4 @@
-# 📊 Google Sheets Integration for ProFormance Waitlist
+# 📊 Google Sheets Integration for Reform Waitlist
 
 This guide will help you set up automatic waitlist submissions to a Google Spreadsheet.
 
@@ -16,7 +16,7 @@ This guide will help you set up automatic waitlist submissions to a Google Sprea
 
 1. **Go to [sheets.google.com](https://sheets.google.com)**
 2. **Create a new spreadsheet**
-3. **Name it "ProFormance Waitlist"**
+3. **Name it "Reform Waitlist"**
 4. **Add these column headers in row 1:**
    - A1: `Email`
    - B1: `Timestamp`
@@ -37,7 +37,7 @@ This guide will help you set up automatic waitlist submissions to a Google Sprea
 3. **Delete the default code** and paste the code from `google-apps-script.js`
 4. **Replace `YOUR_SPREADSHEET_ID`** with your actual spreadsheet ID
 5. **Save the project** (Ctrl+S)
-6. **Name it "ProFormance Waitlist Handler"**
+6. **Name it "Reform Waitlist Handler"**
 
 ### **Step 4: Deploy the Script**
 
@@ -103,7 +103,7 @@ function doPost(e) {
     // Send email notification
     MailApp.sendEmail({
       to: 'your-email@gmail.com',
-      subject: 'New ProFormance Waitlist Signup! 🎉',
+      subject: 'New Reform Waitlist Signup! 🎉',
       body: `New signup: ${email}\nTime: ${timestamp}\nTotal signups: ${sheet.getLastRow() - 1}`
     });
     
@@ -201,6 +201,6 @@ Add these to your spreadsheet for insights:
 
 ---
 
-**Your ProFormance waitlist is now connected to Google Sheets! 📊**
+**Your Reform waitlist is now connected to Google Sheets! 📊**
 
 Every signup will automatically appear in your spreadsheet, giving you real-time visibility into your growing user base.

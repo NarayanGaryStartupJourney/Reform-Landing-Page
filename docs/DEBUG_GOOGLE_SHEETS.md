@@ -19,7 +19,7 @@ Your Google Apps Script is deployed, but the browser can't read the response bec
 1. **In Google Apps Script** → **Run** → **checkSpreadsheetAccess**
 2. **Check the logs** - you should see:
    ```
-   Spreadsheet name: ProFormance Waitlist
+   Spreadsheet name: Reform Waitlist
    Sheet name: Waitlist (or Sheet1)
    Last row: 1
    Access successful!
@@ -34,7 +34,7 @@ Your Google Apps Script is deployed, but the browser can't read the response bec
 2. **You should see:**
    ```json
    {
-     "message": "ProFormance Waitlist API is running!",
+     "message": "Reform Waitlist API is running!",
      "timestamp": "2024-01-15T10:30:00.000Z",
      "status": "active"
    }
@@ -42,7 +42,7 @@ Your Google Apps Script is deployed, but the browser can't read the response bec
 
 ## ✅ **Step 4: Test Form Submission (2 minutes)**
 
-1. **Go to your live site:** [https://useproformance.netlify.app/](https://useproformance.netlify.app/)
+1. **Go to your live site:** [https://usereform.netlify.app/](https://usereform.netlify.app/)
 2. **Open browser developer tools** (F12)
 3. **Go to Console tab**
 4. **Submit your email** (nmanivan97@gmail.com)

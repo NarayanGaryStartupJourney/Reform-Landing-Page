@@ -22,7 +22,7 @@
 1. After logging in, click **"New +"** button
 2. Select **"Static Site"**
 3. Connect your repository:
-   - Search for: `NarayanGaryStartupJourney/ProFormance-Landing-Page`
+   - Search for: `NarayanGaryStartupJourney/Reform-Landing-Page`
    - Click **"Connect"**
 
 ### **Step 3: Configure Deployment**

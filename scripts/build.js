@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Build script for ProFormance Landing Page
+ * Build script for Reform Landing Page
  * Minifies CSS and JavaScript for production deployment
  */
 
@@ -42,7 +42,7 @@ function minifyHTML(html) {
 
 // Build function
 function build() {
-    console.log('🚀 Building ProFormance Landing Page...');
+    console.log('🚀 Building Reform Landing Page...');
     
     try {
         // Read source files

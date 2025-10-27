@@ -98,6 +98,6 @@ Add this to your form:
 
 ---
 
-**Your ProFormance waitlist is now working! 🎉**
+**Your Reform waitlist is now working! 🎉**
 
 Every email submission will be captured and you'll be notified immediately. Perfect for tracking early user interest in your AI-powered exercise form analysis app!

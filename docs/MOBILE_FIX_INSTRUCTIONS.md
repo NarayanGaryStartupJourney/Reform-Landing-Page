@@ -14,7 +14,7 @@ Updated the Google Apps Script to handle **both** JSON and traditional form-enco
 
 1. **Open your Google Apps Script**:
    - Go to: https://script.google.com
-   - Open your existing "ProFormance Waitlist" project
+   - Open your existing "Reform Waitlist" project
 
 2. **Replace the code**:
    - Select all the existing code in `Code.gs`

@@ -1,5 +1,5 @@
 /**
- * ProFormance Waitlist - Updated Google Apps Script with CORS support
+ * Reform Waitlist - Updated Google Apps Script with CORS support
  * This script handles form submissions and adds them to a Google Spreadsheet
  * 
  * SETUP INSTRUCTIONS:

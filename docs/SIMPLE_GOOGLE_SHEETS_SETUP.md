@@ -7,7 +7,7 @@ This is the **easiest way** to get your waitlist emails into Google Sheets witho
 ### **Step 1: Create Google Form**
 1. **Go to [forms.google.com](https://forms.google.com)**
 2. **Click "Blank"** to create a new form
-3. **Title it:** "ProFormance Waitlist"
+3. **Title it:** "Reform Waitlist"
 4. **Add one question:**
    - Question: "Email Address"
    - Type: "Short answer"
@@ -48,7 +48,7 @@ If you want to keep your custom form design:
 
 ### **Step 1: Create Google Spreadsheet**
 1. **Go to [sheets.google.com](https://sheets.google.com)**
-2. **Create new spreadsheet** named "ProFormance Waitlist"
+2. **Create new spreadsheet** named "Reform Waitlist"
 3. **Add headers:** Email | Timestamp | Source
 4. **Copy the spreadsheet ID** from the URL
 

@@ -1,6 +1,6 @@
-# ProFormance Landing Page
+# Reform Landing Page
 
-A modern, responsive landing page for ProFormance - an AI-powered exercise form analysis app. This landing page is designed to capture early users through a waitlist signup.
+A modern, responsive landing page for Reform - an AI-powered exercise form analysis app. This landing page is designed to capture early users through a waitlist signup.
 
 ## 🚀 Features
 
@@ -64,7 +64,7 @@ reform-landing-page/
 1. **Clone or download the project**
    ```bash
    git clone <your-repo-url>
-   cd proformance-landing-page
+   cd reform-landing-page
    ```
 
 2. **Start the development server**
@@ -252,4 +252,4 @@ If you need help with customization or deployment:
 
 **Ready to launch your fitness app?** 🏋️‍♂️
 
-This landing page is designed to convert visitors into waitlist signups. Customize the content, connect your backend, and start acquiring early users for ProFormance!
+This landing page is designed to convert visitors into waitlist signups. Customize the content, connect your backend, and start acquiring early users for Reform!

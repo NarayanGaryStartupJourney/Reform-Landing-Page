@@ -92,7 +92,7 @@ Look for the **Source** column:
 **You MUST redeploy the Google Apps Script** for this to work:
 
 1. Go to: https://script.google.com
-2. Open your "ProFormance Waitlist" project
+2. Open your "Reform Waitlist" project
 3. Replace `Code.gs` with contents from `updated-google-apps-script.js`
 4. **Save** (💾)
 5. **Deploy**:

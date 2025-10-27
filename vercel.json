@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "proformance-landing-page",
+  "name": "reform-landing-page",
   "builds": [
     {
       "src": "index.html",

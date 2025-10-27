@@ -34,7 +34,7 @@ https://script.google.com/macros/s/AKfycbw_NwzIbLuY2kUNa-nN2DV7crUwJt4my-mBZEQtv
 ## Step 2: Check Google Apps Script Execution Logs
 
 1. Go to: https://script.google.com (on your computer)
-2. Open your "ProFormance Waitlist" project
+2. Open your "Reform Waitlist" project
 3. Click **"Executions"** in the left sidebar (⚡ icon)
 
 **What to look for:**
@@ -89,7 +89,7 @@ If the direct URL test didn't work, your script needs to be updated/redeployed:
 ### Update Steps:
 
 1. **Go to:** https://script.google.com
-2. **Open:** "ProFormance Waitlist" project
+2. **Open:** "Reform Waitlist" project
 3. **Replace code:**
    - Select ALL code in `Code.gs`
    - Delete it

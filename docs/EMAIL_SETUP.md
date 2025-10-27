@@ -1,4 +1,4 @@
-# 📧 Email Setup for ProFormance Waitlist
+# 📧 Email Setup for Reform Waitlist
 
 Your waitlist form is now configured to work with Netlify Forms! Here's how to set up email notifications:
 
@@ -73,11 +73,11 @@ You can customize the notification email in Netlify:
 
 ### **Example Email Template:**
 ```
-Subject: New ProFormance Waitlist Signup! 🎉
+Subject: New Reform Waitlist Signup! 🎉
 
 Hello!
 
-Someone just joined your ProFormance waitlist:
+Someone just joined your Reform waitlist:
 
 Email: {{email}}
 Time: {{timestamp}}
@@ -141,4 +141,4 @@ Your form includes:
 
 **Your waitlist is now live and collecting emails! 🎉**
 
-Every signup will be automatically captured and you'll be notified immediately. Perfect for tracking early user interest in ProFormance!
+Every signup will be automatically captured and you'll be notified immediately. Perfect for tracking early user interest in Reform!

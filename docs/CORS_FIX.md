@@ -20,7 +20,7 @@ I've changed the approach from `fetch()` to form submission, which bypasses CORS
 5. **Deploy** → **Manage Deployments** → **Edit** → **Deploy**
 
 ### **Step 2: Test the Fix**
-1. **Go to your live site:** [https://useproformance.netlify.app/](https://useproformance.netlify.app/)
+1. **Go to your live site:** [https://usereform.netlify.app/](https://usereform.netlify.app/)
 2. **Open browser developer tools** (F12) → **Console tab**
 3. **Submit your email** (nmanivan97@gmail.com)
 4. **Check the console** - you should see:
@@ -61,7 +61,7 @@ After the fix, your spreadsheet should show:
 ### **Test 1: Check API is running**
 Visit: `https://script.google.com/macros/s/AKfycbxEaT2n4_nqocKjhdLr6p2xbO54h8g76JVIJAI2E38XtthkGIonsmgVFe8-BGFirAuU/exec`
 
-You should see: `ProFormance Waitlist API is running!`
+You should see: `Reform Waitlist API is running!`
 
 ### **Test 2: Test form submission**
 ```bash

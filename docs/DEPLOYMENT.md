@@ -1,6 +1,6 @@
-# 🚀 Deployment Guide for ProFormance Landing Page
+# 🚀 Deployment Guide for Reform Landing Page
 
-This guide will help you deploy your ProFormance landing page to various hosting platforms.
+This guide will help you deploy your Reform landing page to various hosting platforms.
 
 ## 📋 Pre-Deployment Checklist
 
@@ -20,7 +20,7 @@ This guide will help you deploy your ProFormance landing page to various hosting
 1. **Connect to Git Repository:**
    ```bash
    # Push your code to GitHub/GitLab/Bitbucket
-   git remote add origin https://github.com/yourusername/proformance-landing-page.git
+   git remote add origin https://github.com/yourusername/reform-landing-page.git
    git push -u origin main
    ```
 
@@ -68,7 +68,7 @@ This guide will help you deploy your ProFormance landing page to various hosting
    - Folder: / (root)
 
 2. **Your site will be available at:**
-   `https://yourusername.github.io/proformance-landing-page`
+   `https://yourusername.github.io/reform-landing-page`
 
 ### 4. AWS S3 + CloudFront
 
@@ -76,12 +76,12 @@ This guide will help you deploy your ProFormance landing page to various hosting
 
 1. **Create S3 bucket:**
    ```bash
-   aws s3 mb s3://your-proformance-site
+   aws s3 mb s3://your-reform-site
    ```
 
 2. **Upload files:**
    ```bash
-   aws s3 sync . s3://your-proformance-site --delete
+   aws s3 sync . s3://your-reform-site --delete
    ```
 
 3. **Configure static website hosting:**
@@ -276,4 +276,4 @@ If you need help with deployment:
 
 ---
 
-**Your ProFormance landing page is now ready to capture early users! 🎉**
+**Your Reform landing page is now ready to capture early users! 🎉**

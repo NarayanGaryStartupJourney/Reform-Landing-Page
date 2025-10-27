@@ -74,7 +74,7 @@ If the tests fail, update your Google Apps Script:
 
 ## 🧪 **Step 5: Test Your Live Site (2 minutes)**
 
-1. **Go to your live site:** [https://useproformance.netlify.app/](https://useproformance.netlify.app/)
+1. **Go to your live site:** [https://usereform.netlify.app/](https://usereform.netlify.app/)
 2. **Open browser developer tools** (F12) → **Console tab**
 3. **Submit your email** (nmanivan97@gmail.com)
 4. **Check the console** for any errors
