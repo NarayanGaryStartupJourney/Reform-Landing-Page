@@ -135,8 +135,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const isiOS = /iPhone|iPad|iPod/i.test(userAgent);
         const isAndroid = /Android/i.test(userAgent);
         
-        // Detect specific in-app browsers
-        const isTwitter = /Twitter/i.test(userAgent);
+        // Always log user agent for debugging
+        console.log('=== FORM SUBMISSION DEBUG ===');
+        console.log('User Agent:', userAgent);
+        console.log('sendBeacon available:', !!navigator.sendBeacon);
+        
+        // Detect specific in-app browsers with multiple patterns
+        const isTwitter = /Twitter/i.test(userAgent) || 
+                         /TwitterAndroid/i.test(userAgent) ||
+                         /com\.twitter\.android/i.test(userAgent);
         const isFacebook = /FBAN|FBAV|FB_IAB|FB4A|FBIOS/i.test(userAgent);
         const isMessenger = /FB_IAB|FBIOS|FB4A|Messenger/i.test(userAgent);
         const isInstagram = /Instagram/i.test(userAgent);
@@ -150,18 +157,22 @@ document.addEventListener('DOMContentLoaded', function() {
                               isLinkedIn || isWeChat || isLine || isSnapchat;
         
         // Log detected browser for debugging
-        if (isInAppBrowser) {
-            const browserName = isTwitter ? 'Twitter' : 
-                              isFacebook ? 'Facebook' : 
-                              isMessenger ? 'Facebook Messenger' :
-                              isInstagram ? 'Instagram' :
-                              isLinkedIn ? 'LinkedIn' :
-                              isWeChat ? 'WeChat' :
-                              isLine ? 'Line' :
-                              isSnapchat ? 'Snapchat' : 'Unknown In-App';
-            console.log(`In-app browser detected: ${browserName}`);
-            console.log(`Platform: ${isiOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'}`);
-        }
+        const browserName = isTwitter ? 'Twitter' : 
+                          isFacebook ? 'Facebook' : 
+                          isMessenger ? 'Facebook Messenger' :
+                          isInstagram ? 'Instagram' :
+                          isLinkedIn ? 'LinkedIn' :
+                          isWeChat ? 'WeChat' :
+                          isLine ? 'Line' :
+                          isSnapchat ? 'Snapchat' : 
+                          isiOS ? 'iOS Safari' :
+                          isAndroid ? 'Android Browser' : 
+                          'Desktop Browser';
+        
+        console.log(`Browser: ${browserName}`);
+        console.log(`In-app browser: ${isInAppBrowser ? 'YES' : 'NO'}`);
+        console.log(`Platform: ${isiOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'}`);
+        console.log('==============================');
         
         // Method 1: sendBeacon for in-app browsers (most reliable)
         if (isInAppBrowser && navigator.sendBeacon) {
