@@ -141,9 +141,15 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('sendBeacon available:', !!navigator.sendBeacon);
         
         // Detect specific in-app browsers with multiple patterns
+        // Twitter detection - multiple patterns for iOS and Android
         const isTwitter = /Twitter/i.test(userAgent) || 
                          /TwitterAndroid/i.test(userAgent) ||
-                         /com\.twitter\.android/i.test(userAgent);
+                         /com\.twitter\.android/i.test(userAgent) ||
+                         /Twitter/i.test(userAgent);
+        
+        // Twitter on iOS - special detection
+        const isTwitterIOS = isTwitter && isiOS;
+        
         const isFacebook = /FBAN|FBAV|FB_IAB|FB4A|FBIOS/i.test(userAgent);
         const isMessenger = /FB_IAB|FBIOS|FB4A|Messenger/i.test(userAgent);
         const isInstagram = /Instagram/i.test(userAgent);
@@ -157,7 +163,8 @@ document.addEventListener('DOMContentLoaded', function() {
                               isLinkedIn || isWeChat || isLine || isSnapchat;
         
         // Log detected browser for debugging
-        const browserName = isTwitter ? 'Twitter' : 
+        const browserName = isTwitterIOS ? 'Twitter iOS' :
+                          isTwitter ? 'Twitter' : 
                           isFacebook ? 'Facebook' : 
                           isMessenger ? 'Facebook Messenger' :
                           isInstagram ? 'Instagram' :
@@ -172,10 +179,14 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`Browser: ${browserName}`);
         console.log(`In-app browser: ${isInAppBrowser ? 'YES' : 'NO'}`);
         console.log(`Platform: ${isiOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'}`);
+        if (isTwitterIOS) {
+            console.log('🐦 Twitter iOS detected - using most reliable submission method');
+        }
         console.log('==============================');
         
         // iOS Safari workaround: Use sendBeacon/image beacon for better reliability
         // iOS Safari doesn't reliably fire iframe.onload, so we prefer these methods
+        // Twitter iOS needs the most reliable method (always use image beacon if sendBeacon fails)
         const useReliableMethod = isInAppBrowser || (isiOS && !isInAppBrowser);
         
         if (isiOS && !isInAppBrowser) {
@@ -185,8 +196,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Method 1: sendBeacon for in-app browsers AND iOS Safari (most reliable)
         if (useReliableMethod && navigator.sendBeacon) {
             console.log('Attempting sendBeacon method...');
-            // Use different source for iOS Safari vs in-app browsers
-            const source = isInAppBrowser ? 'landing_page_inapp' : 'landing_page_ios_safari';
+            // Use different source for Twitter iOS, other in-app browsers, and iOS Safari
+            let source;
+            if (isTwitterIOS) {
+                source = 'landing_page_twitter_ios';
+            } else if (isInAppBrowser) {
+                source = 'landing_page_inapp';
+            } else {
+                source = 'landing_page_ios_safari';
+            }
+            
             const params = new URLSearchParams({
                 email: email,
                 source: source,
@@ -198,10 +217,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const beaconSent = navigator.sendBeacon(url);
                 if (beaconSent) {
                     console.log('✓ sendBeacon: Request queued successfully');
+                    // For Twitter iOS, use slightly longer timeout to ensure delivery
+                    const timeout = isTwitterIOS ? 2500 : 2000;
                     setTimeout(() => {
                         console.log('sendBeacon completed, showing success');
                         handleSuccess();
-                    }, 2000);
+                    }, timeout);
                     return;
                 } else {
                     console.warn('sendBeacon failed, trying fallback method...');
@@ -214,10 +235,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Method 2: Image beacon fallback for in-app browsers AND iOS Safari
+        // This is especially important for Twitter iOS which may block sendBeacon
         if (useReliableMethod) {
             console.log('Using image beacon method for reliable submission');
-            // Use different source for iOS Safari vs in-app browsers
-            const source = isInAppBrowser ? 'landing_page_image' : 'landing_page_ios_image';
+            if (isTwitterIOS) {
+                console.log('🐦 Twitter iOS: Using image beacon (most reliable for Twitter)');
+            }
+            
+            // Use different source for Twitter iOS, other in-app browsers, and iOS Safari
+            let source;
+            if (isTwitterIOS) {
+                source = 'landing_page_twitter_ios_image';
+            } else if (isInAppBrowser) {
+                source = 'landing_page_image';
+            } else {
+                source = 'landing_page_ios_image';
+            }
             const params = new URLSearchParams({
                 email: email,
                 source: source,
@@ -227,33 +260,50 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const img = new Image();
             img.style.display = 'none';
+            img.crossOrigin = 'anonymous'; // Helps with some browser restrictions
             
             img.onload = () => {
                 console.log('✓ Image beacon loaded successfully');
+                if (isTwitterIOS) {
+                    console.log('🐦 Twitter iOS: Image beacon succeeded');
+                }
                 handleSuccess();
             };
             
             img.onerror = () => {
-                console.warn('Image beacon failed, but request might have been sent');
-                // Still show success - request was likely sent
-                setTimeout(() => handleSuccess(), 2000);
+                console.warn('Image beacon onerror fired, but request might have been sent');
+                if (isTwitterIOS) {
+                    console.warn('🐦 Twitter iOS: Image beacon onerror - but request was likely sent');
+                }
+                // Still show success - request was likely sent (browser may block image but not the GET request)
+                // For Twitter iOS, be more aggressive with success
+                const errorTimeout = isTwitterIOS ? 1500 : 2000;
+                setTimeout(() => handleSuccess(), errorTimeout);
             };
             
-            // Set src to trigger the request
+            // Set src to trigger the request immediately
+            console.log(`Loading image beacon: ${url.substring(0, 80)}...`);
             img.src = url;
             document.body.appendChild(img);
             
             // Cleanup and fallback timeout
+            // Twitter iOS needs longer timeout due to restrictions
+            const cleanupTimeout = isTwitterIOS ? 4000 : 3000;
             setTimeout(() => {
                 if (img.parentNode) {
                     img.parentNode.removeChild(img);
                 }
                 // If success hasn't been handled by now, assume it worked
+                // This is especially important for Twitter iOS
                 if (!successHandled) {
-                    console.log('Image beacon timeout - assuming success');
+                    if (isTwitterIOS) {
+                        console.log('🐦 Twitter iOS: Image beacon timeout - assuming success (Twitter may block image load but request was sent)');
+                    } else {
+                        console.log('Image beacon timeout - assuming success');
+                    }
                     handleSuccess();
                 }
-            }, 3000);
+            }, cleanupTimeout);
             
             return;
         }
