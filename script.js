@@ -21,6 +21,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('successMessage');
     const emailInput = document.getElementById('email');
     
+    // Check if we're returning from a form redirect (Twitter iOS fallback)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('submitted') === 'true') {
+        console.log('✅ Form redirect detected - showing success message');
+        // Hide form and show success message
+        if (waitlistForm) waitlistForm.style.display = 'none';
+        if (successMessage) successMessage.style.display = 'block';
+        
+        // Show success toast
+        const toastContainer = document.getElementById('toastContainer');
+        if (toastContainer) {
+            const toast = document.createElement('div');
+            toast.className = 'toast success';
+            toast.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <div class="toast-content">
+                    <div class="toast-title">Success</div>
+                    <div class="toast-message">Welcome to the waitlist! We'll notify you when Reform is ready.</div>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            
+            // Clean URL (remove ?submitted=true)
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Auto remove toast
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'toastSlideOut 0.3s ease';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+        
+        // Scroll to success message
+        if (successMessage) {
+            successMessage.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+        
+        return; // Don't continue with form setup
+    }
+    
     // Form submission handler for Google Apps Script
     waitlistForm.addEventListener('submit', function(e) {
         const email = emailInput.value.trim();
@@ -304,16 +353,86 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }, 1000);
             
-            // FINAL FALLBACK: Show success after timeout (at least one method likely succeeded)
+            // FINAL FALLBACK OPTION 1: Try traditional form submission to hidden iframe
+            // This sometimes works when JavaScript methods are blocked
+            setTimeout(() => {
+                console.log('🐦 Twitter iOS: Trying traditional form submission as fallback...');
+                
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = GOOGLE_SCRIPT_URL;
+                form.target = 'twitter_ios_frame';
+                form.style.display = 'none';
+                
+                const emailField = document.createElement('input');
+                emailField.type = 'hidden';
+                emailField.name = 'email';
+                emailField.value = email;
+                
+                const sourceField = document.createElement('input');
+                sourceField.type = 'hidden';
+                sourceField.name = 'source';
+                sourceField.value = 'landing_page_twitter_ios_form';
+                
+                const redirectField = document.createElement('input');
+                redirectField.type = 'hidden';
+                redirectField.name = 'redirect';
+                redirectField.value = window.location.href.split('?')[0] + '?submitted=true';
+                
+                form.appendChild(emailField);
+                form.appendChild(sourceField);
+                form.appendChild(redirectField);
+                
+                const iframe = document.createElement('iframe');
+                iframe.name = 'twitter_ios_frame';
+                iframe.style.position = 'fixed';
+                iframe.style.top = '-9999px';
+                iframe.style.left = '-9999px';
+                iframe.style.width = '1px';
+                iframe.style.height = '1px';
+                iframe.style.border = 'none';
+                
+                document.body.appendChild(iframe);
+                document.body.appendChild(form);
+                
+                iframe.onload = () => {
+                    console.log('🐦 Twitter iOS: Form iframe loaded');
+                    if (!successHandled) {
+                        handleSuccess();
+                    }
+                };
+                
+                try {
+                    form.submit();
+                    console.log('🐦 Twitter iOS: Form submitted via iframe');
+                } catch (e) {
+                    console.error('🐦 Twitter iOS: Form submission failed:', e);
+                }
+                
+                // Cleanup after delay
+                setTimeout(() => {
+                    if (form.parentNode) document.body.removeChild(form);
+                    if (iframe.parentNode) document.body.removeChild(iframe);
+                }, 10000);
+            }, 2000);
+            
+            // FINAL FALLBACK OPTION 2: Show success after timeout (at least one method likely succeeded)
             // Twitter iOS is very restrictive, but one of these methods should work
             setTimeout(() => {
                 if (!successHandled) {
                     console.log('🐦 Twitter iOS: Final timeout - assuming at least one method succeeded');
                     console.log(`🐦 Twitter iOS: Created ${imageBeaconsCreated} image beacons`);
                     console.log('🐦 Twitter iOS: Check Google Sheet - email should appear even if all methods report failure');
+                    
+                    // Check if we're on a page with ?submitted=true (redirect came back)
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('submitted') === 'true') {
+                        console.log('🐦 Twitter iOS: Redirect detected - form submission succeeded!');
+                    }
+                    
                     handleSuccess();
                 }
-            }, 3500);
+            }, 5000); // Increased timeout to allow form redirect to work
             
             return; // Don't continue to other methods for Twitter iOS
         }
