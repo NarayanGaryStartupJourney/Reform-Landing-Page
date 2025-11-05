@@ -174,12 +174,22 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`Platform: ${isiOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'}`);
         console.log('==============================');
         
-        // Method 1: sendBeacon for in-app browsers (most reliable)
-        if (isInAppBrowser && navigator.sendBeacon) {
+        // iOS Safari workaround: Use sendBeacon/image beacon for better reliability
+        // iOS Safari doesn't reliably fire iframe.onload, so we prefer these methods
+        const useReliableMethod = isInAppBrowser || (isiOS && !isInAppBrowser);
+        
+        if (isiOS && !isInAppBrowser) {
+            console.log('⚠️ iOS Safari detected - using reliable method (sendBeacon/image) instead of iframe');
+        }
+        
+        // Method 1: sendBeacon for in-app browsers AND iOS Safari (most reliable)
+        if (useReliableMethod && navigator.sendBeacon) {
             console.log('Attempting sendBeacon method...');
+            // Use different source for iOS Safari vs in-app browsers
+            const source = isInAppBrowser ? 'landing_page_inapp' : 'landing_page_ios_safari';
             const params = new URLSearchParams({
                 email: email,
-                source: 'landing_page_inapp',
+                source: source,
                 timestamp: new Date().toISOString()
             });
             const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
@@ -203,12 +213,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Method 2: Image beacon fallback for in-app browsers
-        if (isInAppBrowser) {
-            console.log('Using image beacon method for in-app browser');
+        // Method 2: Image beacon fallback for in-app browsers AND iOS Safari
+        if (useReliableMethod) {
+            console.log('Using image beacon method for reliable submission');
+            // Use different source for iOS Safari vs in-app browsers
+            const source = isInAppBrowser ? 'landing_page_image' : 'landing_page_ios_image';
             const params = new URLSearchParams({
                 email: email,
-                source: 'landing_page_image',
+                source: source,
                 timestamp: new Date().toISOString()
             });
             const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
