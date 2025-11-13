@@ -1,76 +1,34 @@
 /**
  * Reform Waitlist - Updated Google Apps Script with CORS support
  * This script handles form submissions and adds them to a Google Spreadsheet
- * 
- * SETUP INSTRUCTIONS:
- * 1. Go to script.google.com
- * 2. Open your existing project
- * 3. Replace the code with this updated version
- * 4. Save and redeploy with these settings:
- *    - Execute as: Me
- *    - Who has access: Anyone ⚠️ CRITICAL for CORS!
- * 
- * CORS SUPPORT:
- * - Google Apps Script automatically adds CORS headers when deployed with "Anyone" access
- * - ContentService responses are CORS-friendly
- * - HtmlService responses work with iframe submissions
- * - GET and POST methods both supported
- */
-
-/**
- * Handle OPTIONS requests for CORS preflight
- * This is called automatically by browsers before POST requests
  */
 function doOptions(e) {
-  console.log('=== OPTIONS REQUEST (CORS Preflight) ===');
-  console.log('Origin:', e.parameter.origin || 'Not provided');
-  
-  // Return a response that allows the actual request
-  // Google Apps Script automatically adds appropriate CORS headers
   return ContentService.createTextOutput('')
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function doPost(e) {
   try {
-    // Log the incoming request for debugging
-    console.log('=== POST REQUEST RECEIVED ===');
-    console.log('Content Type:', e.postData ? e.postData.type : 'No postData');
-    console.log('Parameters:', JSON.stringify(e.parameter || {}));
-    
-    // Parse the form data - handle both JSON and form-encoded data
     let email, source;
-    
-    // Check if data is sent as JSON (fetch) or form data (form submission)
     if (e.postData && e.postData.type === 'application/json') {
-      // JSON data from fetch
-      console.log('Parsing JSON data');
       const data = JSON.parse(e.postData.contents);
       email = data.email;
       source = data.source || 'landing_page';
     } else {
-      // Form data from traditional form submission
-      console.log('Parsing form data');
       email = e.parameter.email || e.parameters.email;
       source = e.parameter.source || e.parameters.source || 'landing_page';
       
-      // Handle array parameters (sometimes form data comes as array)
       if (Array.isArray(email)) email = email[0];
       if (Array.isArray(source)) source = source[0];
     }
     
     const timestamp = new Date();
-    
-    console.log('Received email via POST:', email);
-    console.log('Source:', source);
-    console.log('Timestamp:', timestamp.toISOString());
-    
+        
     // Validate email
     if (!email || email.trim() === '') {
       console.error('Validation failed: Email is empty');
       throw new Error('Email is required');
     }
-    
     // Basic email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -222,12 +180,25 @@ function doGet(e) {
         );
       }
       
-      // Return a simple success response (for image beacon / sendBeacon)
-      console.log('Returning success response');
-      const output = ContentService.createTextOutput('success');
-      output.setMimeType(ContentService.MimeType.TEXT);
+      // Return a response optimized for image beacons and restricted browsers
+      // For image beacons, we return a 1x1 transparent PNG (base64 encoded)
+      // This ensures maximum compatibility with Twitter iOS and other restricted browsers
+      console.log('Returning image beacon response (1x1 transparent PNG)');
       
-      return output;
+      // 1x1 transparent PNG in base64
+      const transparentPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      
+      try {
+        // Try to return as PNG (best for image beacons)
+        const blob = Utilities.newBlob(Utilities.base64Decode(transparentPng), 'image/png', 'pixel.png');
+        return ContentService.createBlobOutput(blob).setMimeType(ContentService.MimeType.PNG);
+      } catch (blobError) {
+        // Fallback to text if blob creation fails
+        console.log('Blob creation failed, using text fallback:', blobError);
+        const output = ContentService.createTextOutput('success');
+        output.setMimeType(ContentService.MimeType.TEXT);
+        return output;
+      }
       
     } else {
       // Regular GET request (for testing/health check)
@@ -255,7 +226,14 @@ function doGet(e) {
     
     // Still return success for image beacon (can't show errors to user anyway)
     // Log the error for debugging but don't fail the request
-    return ContentService.createTextOutput('error').setMimeType(ContentService.MimeType.TEXT);
+    // Return a 1x1 transparent PNG even on error to ensure image beacon works
+    try {
+      const transparentPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      const blob = Utilities.newBlob(Utilities.base64Decode(transparentPng), 'image/png', 'pixel.png');
+      return ContentService.createBlobOutput(blob).setMimeType(ContentService.MimeType.PNG);
+    } catch (blobError) {
+      return ContentService.createTextOutput('error').setMimeType(ContentService.MimeType.TEXT);
+    }
   }
 }
 
@@ -526,3 +504,4 @@ function previewCleanup() {
     return { success: false, error: error.toString() };
   }
 }
+

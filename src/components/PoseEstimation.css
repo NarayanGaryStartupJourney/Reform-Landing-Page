@@ -1,0 +1,109 @@
+.pose-estimation-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.pose-figure {
+  position: absolute;
+  opacity: 1;
+  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.8));
+}
+
+.pose-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.7));
+}
+
+.pose-silhouette {
+  opacity: 0.7;
+}
+
+.pose-wireframe {
+  filter: drop-shadow(0 0 15px rgba(59, 130, 246, 1));
+}
+
+/* Position figures around the background */
+.pose-1 {
+  /* Squatting - bottom left */
+  bottom: 20%;
+  left: 10%;
+  width: 150px;
+  height: 225px;
+  transform: scale(1);
+}
+
+.pose-2 {
+  /* Basketball - top right */
+  top: 20%;
+  right: 10%;
+  width: 170px;
+  height: 255px;
+  transform: scale(1) rotate(-5deg);
+}
+
+.pose-3 {
+  /* Walking - top left */
+  top: 20%;
+  left: 10%;
+  width: 165px;
+  height: 247px;
+  transform: scale(1) rotate(-5deg);
+}
+
+.pose-4 {
+  /* Leg lift - bottom right */
+  bottom: 20%;
+  right: 10%;
+  width: 155px;
+  height: 232px;
+  transform: scale(1) rotate(5deg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .pose-1,
+  .pose-2,
+  .pose-3,
+  .pose-4 {
+    opacity: 0.8;
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .pose-1,
+  .pose-2,
+  .pose-3,
+  .pose-4 {
+    opacity: 0.7;
+    transform: scale(0.75);
+  }
+  
+  .pose-1 {
+    bottom: 10%;
+    left: 5%;
+  }
+  
+  .pose-2 {
+    top: 15%;
+    right: 5%;
+  }
+  
+  .pose-3 {
+    top: 10%;
+    left: 8%;
+  }
+  
+  .pose-4 {
+    bottom: 15%;
+    right: 8%;
+  }
+}
+

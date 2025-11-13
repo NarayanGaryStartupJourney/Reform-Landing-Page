@@ -1,30 +1,36 @@
 {
   "name": "reform-landing-page",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Landing page for Reform - AI-powered exercise form analysis app",
-  "main": "index.html",
+  "main": "src/App.jsx",
   "scripts": {
-    "start": "python -m http.server 8000",
-    "dev": "python -m http.server 8000",
-    "build": "node scripts/build.js",
-    "build:watch": "nodemon --watch styles.css --watch script.js --watch index.html --exec 'npm run build'",
-    "deploy": "npm run build && echo 'Ready for deployment to any static hosting service'"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
   },
-  "keywords": [
-    "fitness",
-    "ai",
-    "exercise",
-    "form-analysis",
-    "landing-page",
-    "waitlist"
-  ],
-  "author": "Reform Team",
-  "license": "MIT",
-  "devDependencies": {},
-  "dependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/NarayanGaryStartupJourney/Reform-Landing-Page.git"
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "homepage": "https://reform.app"
 }
