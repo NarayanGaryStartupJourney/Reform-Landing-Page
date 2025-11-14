@@ -32,6 +32,5 @@
       "last 1 safari version"
     ]
   },
-  "homepage": ".",
-  "packageManager": "npm@10.0.0"
+  "homepage": "."
 }
