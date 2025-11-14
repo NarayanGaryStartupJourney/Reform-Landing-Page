@@ -2,8 +2,9 @@ services:
   - type: web
     name: reform-landing-page
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && npm run build
     staticPublishPath: ./build
+    nodeVersion: 22
     headers:
       - path: /*
         name: Cache-Control
