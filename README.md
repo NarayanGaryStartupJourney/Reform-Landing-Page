@@ -1,58 +1,68 @@
 # Reform Landing Page
 
-A simple, clean React landing page for Reform.
+A React landing page for Reform - AI-powered exercise form analysis.
 
 ## 🚀 Quick Start
 
 ```bash
 npm install
-npm run dev
+npm start
 ```
 
-Opens at `http://localhost:5173`
+Opens at `http://localhost:3000`
 
 ## 📁 Project Structure
 
 ```
 src/
-├── App.jsx              # Everything is here! (the whole app)
-├── App.css              # Styles
-├── main.jsx             # Starts the app
-├── index.css            # Global styles
-└── scripts/             # Google Apps Script (for backend)
+├── App.jsx                    # Main application component
+├── App.css                    # Application styles
+├── index.jsx                  # React entry point
+├── components/
+│   ├── Logo.jsx               # Reform logo component
+│   ├── PoseEstimation.jsx     # Pose estimation figures
+│   └── PoseEstimation.css     # Pose estimation styles
+└── scripts/
     └── google-apps-script/
+        └── google-apps-script.js  # Google Apps Script for form submissions
 ```
 
-That's it! Super simple.
+## 🎯 Features
 
-## 🎯 How It Works
-
-1. User sees: **"Reform your physique. Reform your journey."**
-2. User clicks **"Sign Up"** → email form appears
-3. User enters email → clicks **"Submit"**
-4. Email is saved to Google Sheets
-5. Success message shows
+- **Email Waitlist**: Collect email signups via Google Sheets
+- **Twitter iOS Compatible**: Form submissions work in restricted browsers
+- **Pose Estimation Visuals**: Animated wireframe figures showcasing exercise analysis
+- **Responsive Design**: Works on all devices
 
 ## 🔧 Setup Google Sheets
 
 1. Copy code from `src/scripts/google-apps-script/google-apps-script.js`
-2. Paste into [script.google.com](https://script.google.com)
-3. Deploy as Web App with "Anyone" access
+2. Paste into [Google Apps Script](https://script.google.com)
+3. Deploy as Web App with "Anyone" access (important for CORS)
 4. Update `GOOGLE_SCRIPT_URL` in `src/App.jsx` with your deployment URL
 
 ## 🚀 Deploy
+
+### Build
 
 ```bash
 npm run build
 ```
 
-Deploy the `dist/` folder to any static hosting service.
+Creates optimized production build in `build/` folder.
 
-## 📝 Customize
+### Deploy to Render
 
-Edit `src/App.jsx` to change:
-- The headline text
-- Button text
-- Colors (in `src/App.css`)
+The project includes `render.yaml` for automatic deployment to Render. The build command and publish directory are configured automatically.
 
-That's it! Super simple.
+## 🛠️ Tech Stack
+
+- **React** (Create React App)
+- **Google Apps Script** (Backend for form submissions)
+- **Render** (Hosting)
+
+## 📝 Development
+
+- Edit `src/App.jsx` to modify the landing page content
+- Edit `src/App.css` to change styles
+- Edit `src/components/PoseEstimation.jsx` to modify pose figures
