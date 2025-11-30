@@ -72,9 +72,9 @@ function App() {
           <Logo />
           <span className="logo-text">Reform</span>
         </div>
-        <button className="header-cta" onClick={() => document.getElementById('waitlist-form')?.scrollIntoView({ behavior: 'smooth' })}>
+        <a href="https://meetings-na2.hubspot.com/narayan-manivannan" target="_blank" rel="noopener noreferrer" className="header-cta">
           Join Waitlist
-        </button>
+        </a>
       </header>
 
       {/* Main Content */}
