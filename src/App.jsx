@@ -73,7 +73,7 @@ function App() {
           <span className="logo-text">Reform</span>
         </div>
         <a href="https://meetings-na2.hubspot.com/narayan-manivannan" target="_blank" rel="noopener noreferrer" className="header-cta">
-          Join Waitlist
+          Live Demo
         </a>
       </header>
 
